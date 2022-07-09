@@ -74,7 +74,7 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                
+
                 groupId = 'com.github.SamueldaCostaAraujoNunes'
                 artifactId = 'utility-tools-kit-android'
                 version = '1.0'

@@ -39,11 +39,11 @@ class FirstFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
-//        binding.teste.addTextChangedListener(object: DebounceTextWatcher(){
-//            override fun runAfterDelayed(query: String) {
-//                binding.textviewFirst.fadeAnimationText(UiText.StringResource(R.string.teste, query))
-//            }
-//        })
+        binding.teste.addTextChangedListener(object: DebounceTextWatcher(){
+            override fun runAfterDelayed(query: String) {
+                binding.textviewFirst.fadeAnimationText(UiText.StringResource(R.string.teste, query))
+            }
+        })
         return binding.root
 
     }

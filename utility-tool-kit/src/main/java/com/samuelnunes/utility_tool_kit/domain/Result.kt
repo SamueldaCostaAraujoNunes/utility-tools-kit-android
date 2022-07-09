@@ -4,19 +4,23 @@ import com.samuelnunes.utility_tool_kit.utils.UiText
 import timber.log.Timber
 
 
-sealed class Result<out R> {
+sealed class Result<out T> {
 
-    object Loading : Result<Nothing>()
+    class Loading<out T> : Result<T>()
+    class Empty<out T> : Result<T>()
     data class Success<out T>(val data: T) : Result<T>()
-    data class Error<T>(val message: UiText, val data: T? = null) : Result<T>() {
+    data class Error<out T>(val message: UiText, val data: T? = null) : Result<T>() {
+        constructor(message: String, data: T? = null) : this(
+            UiText.DynamicString(message), data
+        )
         constructor(
             throwable: Throwable,
             data: T? = null
         ) : this(
-            UiText.DynamicString(
-                throwable.localizedMessage ?: throwable.message ?: throwable.toString()
-            ), data
-        )
+            throwable.localizedMessage ?: throwable.message ?: throwable.toString(), data
+        ) {
+            Timber.e(throwable)
+        }
     }
 
     init {
@@ -25,9 +29,10 @@ sealed class Result<out R> {
 
     override fun toString(): String {
         return when (this) {
-            is Success<*> -> "Success[data=$data]"
+            is Success -> "Success[data=$data]"
+            is Empty -> "Empty"
             is Error -> "Error[message=$message, data=$data]"
-            Loading -> "Loading"
+            is Loading -> "Loading"
         }
     }
 }
@@ -38,6 +43,3 @@ val Result<*>.succeeded
 fun <T> Result<T>.successOr(fallback: T): T {
     return (this as? Result.Success<T>)?.data ?: fallback
 }
-
-val <T> Result<T>.data: T?
-    get() = (this as? Result.Success)?.data
