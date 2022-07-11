@@ -10,33 +10,51 @@ sealed class Result<out T> {
             Timber.d(toString())
         }
     }
+
     class Empty<out T> : Result<T>() {
         init {
             Timber.d(toString())
         }
     }
+
     data class Success<out T>(val data: T, val statusCode: Int = 200) : Result<T>() {
         init {
             Timber.d(toString())
         }
     }
 
-    data class Error<out T>(val exception: Exception, val data: T? = null, val statusCode: Int? = null) : Result<T>() {
-        constructor(throwable: Throwable, data: T? = null) : this(Exception(throwable), data)
-        constructor(message: String, data: T? = null, statusCode: Int? = null) : this(Exception(message), data, statusCode)
+    data class Error<out T>(
+        val exception: Exception,
+        val data: T? = null,
+        val statusCode: Int? = null,
+        val errorBody: String? = null,
+
+        ) : Result<T>() {
+        constructor(throwable: Throwable, data: T? = null, errorBody: String? = null) : this(
+            exception = Exception(throwable),
+            data = data,
+            errorBody = errorBody
+        )
+
+        constructor(
+            message: String,
+            data: T? = null,
+            errorBody: String? = null,
+            statusCode: Int? = null
+        ) : this(Exception(message), data, statusCode, errorBody)
+
         init {
-            Timber.e(toString())
+            Timber.e(exception)
         }
     }
 
     override fun toString(): String {
-        val map = when (this) {
+        return when (this) {
             is Loading -> "Loading..."
             is Empty -> "Empty"
             is Success -> "Success[data=$data, statusCode=$statusCode]"
-            is Error -> "Error[exception=$exception, data=$data], statusCode=$statusCode]"
+            is Error -> "Error[exception=$exception, data=$data, statusCode=$statusCode, errorBody=$errorBody]"
         }
-        return "Result: $map"
     }
 }
 

@@ -17,12 +17,8 @@ class LiveDataCallAdapter<R>(private val responseType: Type) : CallAdapter<R, Li
     }
 
     override fun adapt(call: Call<R>): LiveData<Result<R>> {
-        return object : LiveData<Result<R>>() {
+        return object : LiveData<Result<R>>(Result.Loading()) {
             var started = AtomicBoolean(false)
-
-            init {
-                postValue(Result.Loading())
-            }
 
             override fun onActive() {
                 super.onActive()
@@ -43,15 +39,12 @@ class LiveDataCallAdapter<R>(private val responseType: Type) : CallAdapter<R, Li
                                     )
                                 }
                             } else {
-                                val msg = response.errorBody()?.string()
-                                val errorMsg = if (msg.isNullOrEmpty()) {
-                                    response.message()
-                                } else {
-                                    msg
-                                }
+                                val errorBody = response.errorBody()?.string()
+                                val errorMsg = response.message()
                                 Result.Error<R>(
                                     message = errorMsg,
-                                    statusCode = statusCode
+                                    statusCode = statusCode,
+                                    errorBody = errorBody
                                 )
                             }
                         }
