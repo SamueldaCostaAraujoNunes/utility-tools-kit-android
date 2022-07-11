@@ -12,33 +12,34 @@ abstract class BaseRepository {
         crossinline onFetchFailed: (Throwable) -> Unit = { }
     ): Flow<Result<RemoteType>> = flow {
         emit(Result.Loading())
-        emit(
-            try {
-                val response = fetch()
-                val statusCode = response.code()
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    if (body == null || statusCode == 204) {
-                        Result.Empty()
-                    } else {
-                        Result.Success(
-                            data = body,
-                            statusCode = statusCode
-                        )
-                    }
+        val value: Result<RemoteType> = try {
+            val response = fetch()
+            val statusCode = response.code()
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body == null || statusCode == 204) {
+                    Result.Empty()
                 } else {
-                    val errorBody = response.errorBody()?.charStream()?.readText()
-                    val errorMsg = response.message()
-                    Result.Error(
-                        message = errorMsg,
-                        statusCode = statusCode,
-                        errorBody = errorBody
+                    Result.Success(
+                        data = body as RemoteType,
+                        statusCode = statusCode
                     )
                 }
-            } catch (throwable: Throwable) {
-                onFetchFailed(throwable)
-                Result.Error(throwable)
+            } else {
+                val errorBody = response.errorBody()?.charStream()?.readText()
+                val errorMsg = response.message()
+                Result.Error(
+                    message = errorMsg,
+                    statusCode = statusCode,
+                    errorBody = errorBody
+                )
             }
+        } catch (throwable: Throwable) {
+            onFetchFailed(throwable)
+            Result.Error(throwable)
+        }
+        emit(
+            value
         )
     }
 

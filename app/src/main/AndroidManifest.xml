@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.samuelnunes.utils">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,13 +14,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Utils"
+        android:name="com.samuelnunes.ToolKitUtilsApplication"
+        android:theme="@style/Theme.ToolKitUtils"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="com.samuelnunes.presentation.screens.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Utils.NoActionBar">
+            android:theme="@style/Theme.ToolKitUtils.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

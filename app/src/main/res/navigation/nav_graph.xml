@@ -3,26 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/BreedFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.samuelnunes.utils.FirstFragment"
-        android:label="@string/first_fragment_label"
+        android:id="@+id/BreedFragment"
+        android:name="com.samuelnunes.presentation.screens.cats_list.CatsListFragment"
+        android:label="@string/app_name"
         tools:layout="@layout/fragment_first">
-
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_BreedFragment_to_wikipedia_page"
+            app:destination="@id/wikipedia_page" />
     </fragment>
-    <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.samuelnunes.utils.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
 
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
-    </fragment>
+    <activity
+        android:id="@+id/wikipedia_page"
+        app:action="android.intent.action.VIEW"
+        app:dataPattern="https://en.wikipedia.org/wiki/{cat}">
+        <argument
+            android:name="cat"
+            app:argType="string"
+            app:nullable="false"/>
+    </activity>
+
 </navigation>

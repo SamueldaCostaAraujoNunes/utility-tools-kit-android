@@ -1,5 +1,7 @@
 package com.samuelnunes.utility_tool_kit.domain
 
+import com.bumptech.glide.load.engine.Resource
+import retrofit2.Response
 import timber.log.Timber
 
 
@@ -54,6 +56,15 @@ sealed class Result<out T> {
             is Empty -> "Empty"
             is Success -> "Success[data=$data, statusCode=$statusCode]"
             is Error -> "Error[exception=$exception, data=$data, statusCode=$statusCode, errorBody=$errorBody]"
+        }
+    }
+
+    fun <D> map(mapper: (T?) -> D?): Result<D> {
+        return when(this){
+            is Loading -> Loading()
+            is Empty -> Empty()
+            is Success -> Success(mapper(data)!!, statusCode)
+            is Error -> Error(exception, mapper(data), statusCode, errorBody)
         }
     }
 }
