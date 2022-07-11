@@ -28,6 +28,8 @@ sealed class UiText {
             is StringResource -> context.getString(id, *values)
         }
     }
-
-
 }
+
+fun String.toUiText() = UiText.DynamicString(this)
+
+fun Throwable.toUiText() = UiText.DynamicString(localizedMessage ?: message ?: toString())

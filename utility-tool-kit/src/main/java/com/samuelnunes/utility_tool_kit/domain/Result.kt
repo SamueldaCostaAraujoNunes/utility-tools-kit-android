@@ -1,39 +1,42 @@
 package com.samuelnunes.utility_tool_kit.domain
 
-import com.samuelnunes.utility_tool_kit.utils.UiText
 import timber.log.Timber
 
 
 sealed class Result<out T> {
 
-    class Loading<out T> : Result<T>()
-    class Empty<out T> : Result<T>()
-    data class Success<out T>(val data: T) : Result<T>()
-    data class Error<out T>(val message: UiText, val data: T? = null) : Result<T>() {
-        constructor(message: String, data: T? = null) : this(
-            UiText.DynamicString(message), data
-        )
-        constructor(
-            throwable: Throwable,
-            data: T? = null
-        ) : this(
-            throwable.localizedMessage ?: throwable.message ?: throwable.toString(), data
-        ) {
-            Timber.e(throwable)
+    class Loading<out T> : Result<T>() {
+        init {
+            Timber.d(toString())
+        }
+    }
+    class Empty<out T> : Result<T>() {
+        init {
+            Timber.d(toString())
+        }
+    }
+    data class Success<out T>(val data: T, val statusCode: Int = 200) : Result<T>() {
+        init {
+            Timber.d(toString())
         }
     }
 
-    init {
-        Timber.d(this.toString())
+    data class Error<out T>(val exception: Exception, val data: T? = null, val statusCode: Int? = null) : Result<T>() {
+        constructor(throwable: Throwable, data: T? = null) : this(Exception(throwable), data)
+        constructor(message: String, data: T? = null, statusCode: Int? = null) : this(Exception(message), data, statusCode)
+        init {
+            Timber.e(toString())
+        }
     }
 
     override fun toString(): String {
-        return when (this) {
-            is Success -> "Success[data=$data]"
+        val map = when (this) {
+            is Loading -> "Loading..."
             is Empty -> "Empty"
-            is Error -> "Error[message=$message, data=$data]"
-            is Loading -> "Loading"
+            is Success -> "Success[data=$data, statusCode=$statusCode]"
+            is Error -> "Error[exception=$exception, data=$data], statusCode=$statusCode]"
         }
+        return "Result: $map"
     }
 }
 

@@ -15,21 +15,28 @@ abstract class BaseRepository {
         emit(
             try {
                 val response = fetch()
+                val statusCode = response.code()
                 if (response.isSuccessful) {
                     val body = response.body()
-                    if (body == null || response.code() == 204) {
+                    if (body == null || statusCode == 204) {
                         Result.Empty()
                     } else {
-                        Result.Success(body)
+                        Result.Success(
+                            data = body,
+                            statusCode = statusCode
+                        )
                     }
                 } else {
-                    val msg = response.errorBody()?.string()
+                    val msg = response.errorBody()?.charStream()?.readText()
                     val errorMsg = if (msg.isNullOrEmpty()) {
                         response.message()
                     } else {
                         msg
                     }
-                    Result.Error(message = errorMsg)
+                    Result.Error(
+                        message = errorMsg,
+                        statusCode = statusCode
+                    )
                 }
             } catch (throwable: Throwable) {
                 onFetchFailed(throwable)
@@ -44,36 +51,52 @@ abstract class BaseRepository {
         crossinline saveFetchResult: suspend (RemoteType) -> Unit,
         crossinline onFetchFailed: (Throwable) -> Unit = { },
         crossinline shouldFetch: (LocalType?) -> Boolean = { true }
-    ) = flow {
-        emit(Result.Loading<RemoteType>())
+    ): Flow<Result<LocalType>> = flow {
+        emit(Result.Loading())
         val resultFlow = query()
 
         val flow = if (shouldFetch(resultFlow.firstOrNull())) {
             try {
                 val response = fetch()
+                val statusCode = response.code()
                 if (response.isSuccessful) {
                     val body = response.body()
-                    if (body == null || response.code() == 204) {
-                        resultFlow
-                    } else {
+                    if (body != null) {
                         saveFetchResult(body)
-                        resultFlow.map { Result.Success(it) }
+                    }
+                    resultFlow.map {
+                        Result.Success(
+                            data = it,
+                            statusCode = statusCode
+                        )
                     }
                 } else {
-                    val msg = response.errorBody()?.string()
+                    val msg = response.errorBody()?.charStream()?.readText()
                     val errorMsg = if (msg.isNullOrEmpty()) {
                         response.message()
                     } else {
                         msg
                     }
-                    resultFlow.map { Result.Error(errorMsg, it) }
+                    resultFlow.map {
+                        Result.Error(
+                            message = errorMsg,
+                            data = it,
+                            statusCode = statusCode
+                        )
+                    }
                 }
             } catch (throwable: Throwable) {
                 onFetchFailed(throwable)
-                resultFlow.map { Result.Error(throwable, it) }
+                resultFlow.map {
+                    Result.Error(throwable)
+                }
             }
         } else {
-            resultFlow.map { Result.Success(it) }
+            resultFlow.map {
+                Result.Success(
+                    data = it
+                )
+            }
         }
         emitAll(flow)
     }
