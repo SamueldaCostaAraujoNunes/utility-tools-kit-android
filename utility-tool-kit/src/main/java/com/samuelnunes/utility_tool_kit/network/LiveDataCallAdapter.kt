@@ -6,11 +6,45 @@ import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Callback
 import retrofit2.Response
+import timber.log.Timber
 import java.lang.reflect.Type
 import java.util.concurrent.atomic.AtomicBoolean
 
+class LiveDataBodyCallAdapter<R>(private val responseType: Type) :
+    CallAdapter<R, LiveData<R>> {
 
-class LiveDataCallAdapter<R>(private val responseType: Type) : CallAdapter<R, LiveData<Result<R>>> {
+    override fun responseType(): Type {
+        return responseType
+    }
+
+    override fun adapt(call: Call<R>): LiveData<R> {
+        return object : LiveData<R>() {
+            var started = AtomicBoolean(false)
+
+            override fun onActive() {
+                super.onActive()
+                if (started.compareAndSet(false, true)) {
+                    call.enqueue(object : Callback<R> {
+                        override fun onResponse(call: Call<R>, response: Response<R>) {
+                            if (response.isSuccessful && response.code() != 204) {
+                                postValue(response.body())
+                            } else {
+                                postValue(null)
+                            }
+                        }
+
+                        override fun onFailure(call: Call<R>, throwable: Throwable) {
+                            Timber.wtf(throwable)
+                            postValue(null)
+                        }
+                    })
+                }
+            }
+        }
+    }
+}
+
+class LiveDataResultCallAdapter<R>(private val responseType: Type) : CallAdapter<R, LiveData<Result<R>>> {
 
     override fun responseType(): Type {
         return responseType
@@ -39,7 +73,7 @@ class LiveDataCallAdapter<R>(private val responseType: Type) : CallAdapter<R, Li
                                     )
                                 }
                             } else {
-                                val errorBody = response.errorBody()?.string()
+                                val errorBody = response.errorBody()?.charStream()?.readText()
                                 val errorMsg = response.message()
                                 Result.Error<R>(
                                     message = errorMsg,

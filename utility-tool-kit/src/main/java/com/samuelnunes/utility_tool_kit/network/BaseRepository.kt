@@ -27,15 +27,12 @@ abstract class BaseRepository {
                         )
                     }
                 } else {
-                    val msg = response.errorBody()?.charStream()?.readText()
-                    val errorMsg = if (msg.isNullOrEmpty()) {
-                        response.message()
-                    } else {
-                        msg
-                    }
+                    val errorBody = response.errorBody()?.charStream()?.readText()
+                    val errorMsg = response.message()
                     Result.Error(
                         message = errorMsg,
-                        statusCode = statusCode
+                        statusCode = statusCode,
+                        errorBody = errorBody
                     )
                 }
             } catch (throwable: Throwable) {
@@ -86,7 +83,7 @@ abstract class BaseRepository {
                         }
                     }
                 } else {
-                    val errorBody = response.errorBody()?.string()
+                    val errorBody = response.errorBody()?.charStream()?.readText()
                     val errorMsg = response.message()
                     resultFlow.map {
                         Result.Error(
