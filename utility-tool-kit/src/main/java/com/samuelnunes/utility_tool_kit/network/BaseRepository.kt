@@ -7,41 +7,6 @@ import retrofit2.Response
 
 abstract class BaseRepository {
 
-    inline fun <RemoteType> networkBoundResource(
-        crossinline fetch: suspend () -> Response<RemoteType>,
-        crossinline onFetchFailed: (Throwable) -> Unit = { }
-    ): Flow<Result<RemoteType>> = flow {
-        emit(Result.Loading())
-        val value: Result<RemoteType> = try {
-            val response = fetch()
-            val statusCode = response.code()
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body == null || statusCode == 204) {
-                    Result.Empty()
-                } else {
-                    Result.Success(
-                        data = body as RemoteType,
-                        statusCode = statusCode
-                    )
-                }
-            } else {
-                val errorBody = response.errorBody()?.charStream()?.readText()
-                val errorMsg = response.message()
-                Result.Error(
-                    message = errorMsg,
-                    statusCode = statusCode,
-                    errorBody = errorBody
-                )
-            }
-        } catch (throwable: Throwable) {
-            onFetchFailed(throwable)
-            Result.Error(throwable)
-        }
-        emit(
-            value
-        )
-    }
 
     inline fun <LocalType, RemoteType> networkBoundResource(
         crossinline query: () -> Flow<LocalType>,

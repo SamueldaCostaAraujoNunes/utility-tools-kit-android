@@ -1,7 +1,5 @@
 package com.samuelnunes.utility_tool_kit.domain
 
-import com.bumptech.glide.load.engine.Resource
-import retrofit2.Response
 import timber.log.Timber
 
 
@@ -46,7 +44,7 @@ sealed class Result<out T> {
         ) : this(Exception(message), data, statusCode, errorBody)
 
         init {
-            Timber.e(exception)
+//            Timber.e(exception)
         }
     }
 

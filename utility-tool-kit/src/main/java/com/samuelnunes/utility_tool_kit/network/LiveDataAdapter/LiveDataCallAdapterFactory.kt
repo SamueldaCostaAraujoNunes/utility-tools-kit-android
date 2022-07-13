@@ -1,9 +1,8 @@
-package com.samuelnunes.utility_tool_kit.network
+package com.samuelnunes.utility_tool_kit.network.LiveDataAdapter
 
 import androidx.lifecycle.LiveData
 import com.samuelnunes.utility_tool_kit.domain.Result
 import retrofit2.CallAdapter
-import retrofit2.Response
 import retrofit2.Retrofit
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type

@@ -1,16 +1,22 @@
 package com.samuelnunes.di
 
+import android.content.Context
+import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.samuelnunes.data.remote.Constants.CATS_API_BASE_URL
+import com.samuelnunes.data.Constants
+import com.samuelnunes.data.Constants.CATS_API_BASE_URL
+import com.samuelnunes.data.local.AppDatabase
+import com.samuelnunes.data.local.dao.CatsDao
 import com.samuelnunes.data.remote.api.TheCatApi
 import com.samuelnunes.data.repository.CatsRepository
 import com.samuelnunes.domain.repository.ICatsRepository
-import com.samuelnunes.utility_tool_kit.network.FlowCallAdapterFactory
-import com.samuelnunes.utility_tool_kit.network.LiveDataCallAdapterFactory
+import com.samuelnunes.utility_tool_kit.network.FlowAdapter.FlowCallAdapterFactory
+import com.samuelnunes.utility_tool_kit.network.LiveDataAdapter.LiveDataCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -36,8 +42,19 @@ object NetworkModule {
     fun providerTheCatApiService(builder: Retrofit.Builder): TheCatApi =
         builder.baseUrl(CATS_API_BASE_URL).build().create(TheCatApi::class.java)
 
+    @Provides
+    @Singleton
+    fun database(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(context, AppDatabase::class.java, Constants.TABLE_NAME_CATS)
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
     @Singleton
     @Provides
-    fun providerTheCatsRepository(theCatApi: TheCatApi): ICatsRepository = CatsRepository(theCatApi)
+    fun provideCharacterDao(db: AppDatabase): CatsDao = db.catsDao()
 
+    @Singleton
+    @Provides
+    fun providerTheCatsRepository(theCatApi: TheCatApi, dao: CatsDao): ICatsRepository = CatsRepository(theCatApi, dao)
 }

@@ -1,6 +1,6 @@
 package com.samuelnunes.domain.repository
 
-import com.samuelnunes.data.remote.dto.BreedDTO
+import com.samuelnunes.data.dto.response.BreedDTO
 import com.samuelnunes.utility_tool_kit.domain.Result
 import kotlinx.coroutines.flow.Flow
 

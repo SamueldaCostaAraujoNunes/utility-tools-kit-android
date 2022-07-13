@@ -6,15 +6,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.samuelnunes.domain.entity.Breed
+import com.samuelnunes.utility_tool_kit.extensions.inflate
+import com.samuelnunes.utility_tool_kit.extensions.inflater
+import com.samuelnunes.utils.R
 import com.samuelnunes.utils.databinding.ItemGifBinding
 
 internal class CatGifListAdapter(private val onImageClick: (Breed.Image) -> Unit) :
     ListAdapter<Breed.Image, CatGifListAdapter.ImageViewHolder>(ImageItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = ItemGifBinding.inflate(layoutInflater, parent, false)
-        return ImageViewHolder(binding)
+        return ImageViewHolder(ItemGifBinding.inflate(parent.inflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) =

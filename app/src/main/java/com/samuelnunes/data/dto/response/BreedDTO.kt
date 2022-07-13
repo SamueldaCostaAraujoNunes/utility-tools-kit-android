@@ -1,17 +1,22 @@
-package com.samuelnunes.data.remote.dto
+package com.samuelnunes.data.dto.response
 
 
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.samuelnunes.domain.entity.Breed
 
+@Entity
 data class BreedDTO(
     val adaptability: Int,
     @SerializedName("affection_level")
     val affectionLevel: Int,
     @SerializedName("alt_names")
-    val altNames: String,
+    val altNames: String?,
     @SerializedName("cfa_url")
-    val cfaUrl: String,
+    val cfaUrl: String?,
     @SerializedName("child_friendly")
     val childFriendly: Int,
     @SerializedName("country_code")
@@ -29,7 +34,9 @@ data class BreedDTO(
     @SerializedName("health_issues")
     val healthIssues: Int,
     val hypoallergenic: Int,
+    @PrimaryKey
     val id: String,
+    @Embedded
     val image: ImageDTO?,
     val indoor: Int,
     val intelligence: Int,
@@ -41,7 +48,7 @@ data class BreedDTO(
     val origin: String,
     val rare: Int,
     @SerializedName("reference_image_id")
-    val referenceImageId: String,
+    val referenceImageId: String?,
     val rex: Int,
     @SerializedName("shedding_level")
     val sheddingLevel: Int,
@@ -55,10 +62,11 @@ data class BreedDTO(
     val suppressedTail: Int,
     val temperament: String,
     @SerializedName("vcahospitals_url")
-    val vcahospitalsUrl: String,
+    val vcahospitalsUrl: String?,
     @SerializedName("vetstreet_url")
-    val vetstreetUrl: String,
+    val vetstreetUrl: String?,
     val vocalisation: Int,
+    @Embedded
     val weight: WeightDTO,
     @SerializedName("wikipedia_url")
     val wikipediaUrl: String?
@@ -69,6 +77,7 @@ data class BreedDTO(
 
     data class ImageDTO(
         val height: Int?,
+        @ColumnInfo(name = "id_image")
         val id: String?,
         val url: String?,
         val width: Int?

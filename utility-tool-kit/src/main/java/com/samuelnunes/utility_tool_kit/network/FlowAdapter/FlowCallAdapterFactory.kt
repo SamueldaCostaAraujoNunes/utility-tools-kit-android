@@ -1,4 +1,4 @@
-package com.samuelnunes.utility_tool_kit.network
+package com.samuelnunes.utility_tool_kit.network.FlowAdapter
 
 import com.samuelnunes.utility_tool_kit.domain.Result
 import kotlinx.coroutines.flow.Flow

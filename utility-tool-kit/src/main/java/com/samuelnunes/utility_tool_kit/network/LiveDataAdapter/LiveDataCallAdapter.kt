@@ -1,4 +1,4 @@
-package com.samuelnunes.utility_tool_kit.network
+package com.samuelnunes.utility_tool_kit.network.LiveDataAdapter
 
 import androidx.lifecycle.LiveData
 import com.samuelnunes.utility_tool_kit.domain.Result
@@ -24,7 +24,7 @@ class LiveDataBodyCallAdapter<R>(private val responseType: Type) :
             override fun onActive() {
                 super.onActive()
                 if (started.compareAndSet(false, true)) {
-                    call.enqueue(object : Callback<R> {
+                    call.clone().enqueue(object : Callback<R> {
                         override fun onResponse(call: Call<R>, response: Response<R>) {
                             if (response.isSuccessful && response.code() != 204) {
                                 postValue(response.body())
@@ -57,7 +57,7 @@ class LiveDataResultCallAdapter<R>(private val responseType: Type) : CallAdapter
             override fun onActive() {
                 super.onActive()
                 if (started.compareAndSet(false, true)) {
-                    call.enqueue(object : Callback<R> {
+                    call.clone().enqueue(object : Callback<R> {
                         override fun onResponse(call: Call<R>, response: Response<R>) {
                             val statusCode = response.code()
                             if (response.isSuccessful) {

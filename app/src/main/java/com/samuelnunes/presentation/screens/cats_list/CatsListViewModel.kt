@@ -3,12 +3,16 @@ package com.samuelnunes.presentation.screens.cats_list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.samuelnunes.domain.entity.Breed
 import com.samuelnunes.domain.use_case.GetAllBreedsUseCase
 import com.samuelnunes.domain.use_case.GetCatsGifsUseCase
 import com.samuelnunes.utility_tool_kit.domain.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

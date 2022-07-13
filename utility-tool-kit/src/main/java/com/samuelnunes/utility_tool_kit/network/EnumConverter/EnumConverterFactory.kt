@@ -1,4 +1,4 @@
-package com.samuelnunes.utility_tool_kit.network
+package com.samuelnunes.utility_tool_kit.network.EnumConverter
 
 import com.google.gson.annotations.SerializedName
 import retrofit2.Converter

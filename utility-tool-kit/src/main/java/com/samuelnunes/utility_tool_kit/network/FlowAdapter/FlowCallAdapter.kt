@@ -1,4 +1,4 @@
-package com.samuelnunes.utility_tool_kit.network
+package com.samuelnunes.utility_tool_kit.network.FlowAdapter
 
 import com.samuelnunes.utility_tool_kit.domain.Result
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +19,7 @@ class FlowResultCallAdapter<T>(
         return flow {
             emit(
                 suspendCancellableCoroutine { continuation ->
-                    call.enqueue(object : Callback<T> {
+                    call.clone().enqueue(object : Callback<T> {
 
                         override fun onResponse(call: Call<T>, response: Response<T>) {
                             val statusCode = response.code()
@@ -65,7 +65,7 @@ class FlowBodyCallAdapter<T>(private val responseType: Type) : CallAdapter<T, Fl
         return flow {
             emit(
                 suspendCancellableCoroutine { continuation ->
-                    call.enqueue(object : Callback<T> {
+                    call.clone().enqueue(object : Callback<T> {
                         override fun onFailure(call: Call<T>, t: Throwable) {
                             continuation.resumeWithException(t)
                         }
