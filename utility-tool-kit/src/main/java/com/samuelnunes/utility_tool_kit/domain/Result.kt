@@ -44,7 +44,7 @@ sealed class Result<out T> {
         ) : this(Exception(message), data, statusCode, errorBody)
 
         init {
-//            Timber.e(exception)
+            Timber.e(exception)
         }
     }
 
