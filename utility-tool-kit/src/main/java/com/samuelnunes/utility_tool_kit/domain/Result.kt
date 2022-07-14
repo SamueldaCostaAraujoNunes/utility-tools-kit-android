@@ -5,22 +5,20 @@ import timber.log.Timber
 
 sealed class Result<out T> {
 
+    init {
+        Timber.tag("Result")
+    }
+
     class Loading<out T> : Result<T>() {
-        init {
-            Timber.d(toString())
-        }
+        init { Timber.d(toString()) }
     }
 
     class Empty<out T> : Result<T>() {
-        init {
-            Timber.d(toString())
-        }
+        init { Timber.d(toString()) }
     }
 
     data class Success<out T>(val data: T, val statusCode: Int = 200) : Result<T>() {
-        init {
-            Timber.d(toString())
-        }
+        init { Timber.d(toString()) }
     }
 
     data class Error<out T>(
@@ -30,12 +28,12 @@ sealed class Result<out T> {
         val errorResponse: ErrorResponse? = null
     ) : Result<T>() {
 
-        open class ErrorResponse {
-
-        }
+        abstract class ErrorResponse {}
 
         constructor(
-            throwable: Throwable, data: T? = null, errorResponse: ErrorResponse? = null
+            throwable: Throwable,
+            data: T? = null,
+            errorResponse: ErrorResponse? = null
         ) : this(
             exception = Exception(throwable),
             data = data,

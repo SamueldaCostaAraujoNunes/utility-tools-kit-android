@@ -9,38 +9,31 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import com.google.android.material.snackbar.Snackbar
+import com.samuelnunes.domain.entity.Breed
 import com.samuelnunes.utility_tool_kit.binding.visibleIf
-import com.samuelnunes.utility_tool_kit.domain.Result
-import com.samuelnunes.utility_tool_kit.utils.toUiText
+import com.samuelnunes.utility_tool_kit.extensions.inflate
+import com.samuelnunes.utils.R
 import com.samuelnunes.utils.databinding.FragmentFirstBinding
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class CatsListFragment : Fragment() {
 
     private val viewModel: CatsListViewModel by viewModels()
-
     private lateinit var binding: FragmentFirstBinding
 
-    private val breedListAdapter = BreedListAdapter { breed ->
-        val direction = CatsListFragmentDirections
-            .actionBreedFragmentToWikipediaPage(breed.wikipediaName!!)
-        findNavController().navigate(direction)
-    }
-    private val catGifAdapter = CatGifListAdapter {
-        viewModel.fetchNewGifs()
-    }
-
+    private val breedListAdapter = BreedListAdapter(::clickBreedItem)
+    private val catGifAdapter = CatGifListAdapter(::fetchNewGifs)
     private val concatAdapter = ConcatAdapter(catGifAdapter, breedListAdapter)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentFirstBinding.inflate(inflater, container, false)
-        binding.recyclerCats.adapter = concatAdapter
-        return binding.root
+        return FragmentFirstBinding.inflate(inflater, container, false).apply {
+            binding = this
+            recyclerCats.adapter = concatAdapter
+        }.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,4 +67,12 @@ class CatsListFragment : Fragment() {
             catGifAdapter.submitList(gifs)
         }
     }
+
+    private fun clickBreedItem(breed: Breed) {
+        val direction = CatsListFragmentDirections
+            .actionBreedFragmentToWikipediaPage(breed.wikipediaName!!)
+        findNavController().navigate(direction)
+    }
+
+    private fun fetchNewGifs(image: Breed.Image) = viewModel.fetchNewGifs()
 }
