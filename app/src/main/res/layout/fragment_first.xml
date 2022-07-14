@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-    tools:context="com.samuelnunes.presentation.screens.cats_list.CatsListFragment"
-    tools:itemCount="3"
-    app:spanCount="@integer/spanCountListCats"
-    tools:listitem="@layout/item_cat" />
+    android:fitsSystemWindows="true"
+    tools:context="com.samuelnunes.presentation.screens.cats_list.CatsListFragment">
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_cats"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:spanCount="@integer/spanCountListCats"
+        tools:itemCount="3"
+        tools:listitem="@layout/item_cat" />
+
+</FrameLayout>

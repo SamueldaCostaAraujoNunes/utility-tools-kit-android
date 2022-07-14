@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">ToodooCats</string>
+    <string name="app_name">MyCats</string>
     <string name="wikipedia">Wikipedia</string>
+    <string name="error_in_fetch">Hmmmm, deu algum erro na listagem de %1$s</string>
 </resources>

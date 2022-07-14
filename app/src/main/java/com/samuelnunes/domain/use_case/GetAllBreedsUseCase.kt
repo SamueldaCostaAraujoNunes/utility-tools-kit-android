@@ -10,9 +10,8 @@ import javax.inject.Inject
 class GetAllBreedsUseCase @Inject constructor(
     private var repository: ICatsRepository
 ) {
-
-    operator fun invoke(): Flow<Result<List<Breed>>> {
-        return repository.getAllBreeds().map { res ->
+    operator fun invoke(isAsc: Boolean = true): Flow<Result<List<Breed>>> {
+        return repository.getAllBreeds(isAsc).map { res ->
             res.map { content ->
                 content?.map {
                     it.toBreed()

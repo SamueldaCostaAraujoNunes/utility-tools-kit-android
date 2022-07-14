@@ -4,6 +4,7 @@ import com.samuelnunes.data.remote.api.TheCatApi
 import com.samuelnunes.data.dto.response.BreedDTO
 import com.samuelnunes.data.local.dao.CatsDao
 import com.samuelnunes.domain.repository.ICatsRepository
+import com.samuelnunes.domain.use_case.GetAllBreedsUseCase
 import com.samuelnunes.utility_tool_kit.database.dao.insertOrUpdate
 import com.samuelnunes.utility_tool_kit.domain.Result
 import com.samuelnunes.utility_tool_kit.network.BaseRepository
@@ -16,8 +17,11 @@ class CatsRepository @Inject constructor(
     private val dao: CatsDao
 ) : BaseRepository(), ICatsRepository {
 
-    override fun getAllBreeds(): Flow<Result<List<BreedDTO>>> =
-        networkBoundResource(dao::getAll, api::getAllBreeds, dao::insertAll)
+    override fun getAllBreeds(isAsc: Boolean): Flow<Result<List<BreedDTO>>> = networkBoundResource(
+        if (isAsc) dao::getAllAsc else dao::getAllDesc,
+        api::getAllBreeds,
+        dao::insertAll
+    )
 
     override fun getCatsGifs(): Flow<Result<List<BreedDTO.ImageDTO>>> = api.getRandomGif()
 

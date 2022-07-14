@@ -1,6 +1,5 @@
 package com.samuelnunes.utility_tool_kit.network.FlowAdapter
 
-import com.samuelnunes.utility_tool_kit.R
 import com.samuelnunes.utility_tool_kit.domain.Result
 import com.samuelnunes.utility_tool_kit.network.parseError
 import kotlinx.coroutines.flow.Flow

@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import com.google.android.material.snackbar.Snackbar
+import com.samuelnunes.utility_tool_kit.binding.visibleIf
 import com.samuelnunes.utility_tool_kit.domain.Result
 import com.samuelnunes.utility_tool_kit.utils.toUiText
 import com.samuelnunes.utils.databinding.FragmentFirstBinding
@@ -28,7 +29,7 @@ class CatsListFragment : Fragment() {
         findNavController().navigate(direction)
     }
     private val catGifAdapter = CatGifListAdapter {
-        populateGifs()
+        viewModel.fetchNewGifs()
     }
 
     private val concatAdapter = ConcatAdapter(catGifAdapter, breedListAdapter)
@@ -38,65 +39,39 @@ class CatsListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFirstBinding.inflate(inflater, container, false)
-        binding.root.adapter = concatAdapter
+        binding.recyclerCats.adapter = concatAdapter
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        errorNotify()
+        loadingState()
         populateGifs()
         populateBreedList()
     }
 
+    private fun errorNotify() {
+        viewModel.error.observe(viewLifecycleOwner) { error ->
+            Snackbar.make(binding.root, error.toString(requireContext()), Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun loadingState() {
+        viewModel.loading.observe(viewLifecycleOwner) { loading ->
+            binding.loading.visibleIf(loading)
+        }
+    }
+
     private fun populateBreedList() {
-        viewModel.getAllBreeds().observe(viewLifecycleOwner) { res ->
-            when (res) {
-                is Result.Loading -> showLoading()
-                is Result.Empty -> hideLoading()
-                is Result.Success -> {
-                    hideLoading()
-                    breedListAdapter.submitList(res.data)
-                }
-                is Result.Error -> {
-                    hideLoading()
-                    res.data.let { breedListAdapter.submitList(it) }
-                    Snackbar.make(
-                        binding.root,
-                        res.exception.toUiText().value,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
+        viewModel.breeds.observe(viewLifecycleOwner) { breeds ->
+            breedListAdapter.submitList(breeds)
         }
     }
 
     private fun populateGifs() {
-        viewModel.getCatsGifs().observe(viewLifecycleOwner) { res ->
-            when (res) {
-                is Result.Loading -> showLoading()
-                is Result.Empty -> hideLoading()
-                is Result.Success -> {
-                    hideLoading()
-                    catGifAdapter.submitList(res.data)
-                }
-                is Result.Error -> {
-                    hideLoading()
-                    res.data.let { catGifAdapter.submitList(it) }
-                    Snackbar.make(
-                        binding.root,
-                        res.exception.toUiText().value,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
+        viewModel.gifs.observe(viewLifecycleOwner) { gifs ->
+            catGifAdapter.submitList(gifs)
         }
-    }
-
-    private fun showLoading() {
-        Timber.d("Show Loading")
-    }
-
-    private fun hideLoading() {
-        Timber.d("Hide Loading")
     }
 }
