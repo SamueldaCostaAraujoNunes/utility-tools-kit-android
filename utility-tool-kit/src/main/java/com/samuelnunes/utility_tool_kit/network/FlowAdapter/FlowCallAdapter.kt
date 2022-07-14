@@ -1,6 +1,8 @@
 package com.samuelnunes.utility_tool_kit.network.FlowAdapter
 
+import com.samuelnunes.utility_tool_kit.R
 import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.network.parseError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -12,16 +14,17 @@ import java.lang.reflect.Type
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class FlowResultCallAdapter<T>(
-    private val responseType: Type
-) : CallAdapter<T, Flow<Result<T>>> {
-    override fun adapt(call: Call<T>): Flow<Result<T>> {
+class FlowResultCallAdapter<R>(
+    private val responseType: Type,
+    private val annotations: Array<out Annotation>
+) : CallAdapter<R, Flow<Result<R>>> {
+    override fun adapt(call: Call<R>): Flow<Result<R>> {
         return flow {
             emit(
                 suspendCancellableCoroutine { continuation ->
-                    call.clone().enqueue(object : Callback<T> {
+                    call.clone().enqueue(object : Callback<R> {
 
-                        override fun onResponse(call: Call<T>, response: Response<T>) {
+                        override fun onResponse(call: Call<R>, response: Response<R>) {
                             val statusCode = response.code()
                             continuation.resume(
                                 if (response.isSuccessful) {
@@ -35,18 +38,21 @@ class FlowResultCallAdapter<T>(
                                         )
                                     }
                                 } else {
-                                    val errorBody = response.errorBody()?.charStream()?.readText()
-                                    val errorMsg = response.message()
-                                    Result.Error(
-                                        message = errorMsg,
+                                    val errorResponse = parseError(
                                         statusCode = statusCode,
-                                        errorBody = errorBody
+                                        responseBody = response.errorBody(),
+                                        annotations = annotations
+                                    )
+                                    Result.Error(
+                                        message = response.message(),
+                                        statusCode = statusCode,
+                                        errorResponse = errorResponse
                                     )
                                 }
                             )
                         }
 
-                        override fun onFailure(call: Call<T>, throwable: Throwable) {
+                        override fun onFailure(call: Call<R>, throwable: Throwable) {
                             continuation.resume(Result.Error(throwable))
                         }
                     })

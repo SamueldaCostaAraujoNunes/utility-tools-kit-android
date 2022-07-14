@@ -10,7 +10,7 @@ import java.lang.reflect.Type
 class FlowCallAdapterFactory private constructor() : CallAdapter.Factory() {
     override fun get(
         returnType: Type,
-        annotations: Array<Annotation>,
+        annotations: Array<out Annotation>,
         retrofit: Retrofit
     ): CallAdapter<*, *>? {
         if (getRawType(returnType) != Flow::class.java) {
@@ -24,7 +24,7 @@ class FlowCallAdapterFactory private constructor() : CallAdapter.Factory() {
             require(rawObservableType == Result::class.java) { "type must be a Result" }
             require(observableType is ParameterizedType) { "resource must be parameterized" }
             val bodyType: Type = getParameterUpperBound(0, observableType)
-            return FlowResultCallAdapter<Type>(bodyType)
+            return FlowResultCallAdapter<Type>(bodyType, annotations)
         }
     }
 

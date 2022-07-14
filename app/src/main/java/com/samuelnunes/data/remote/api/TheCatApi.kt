@@ -1,7 +1,11 @@
 package com.samuelnunes.data.remote.api
 
 import com.samuelnunes.data.dto.response.BreedDTO
+import com.samuelnunes.data.dto.response.error.NotFoundError
+import com.samuelnunes.utility_tool_kit.domain.HttpStatusCodeError.FORBIDDEN
+import com.samuelnunes.utility_tool_kit.domain.HttpStatusCodeError.NOT_FOUND
 import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.network.ErrorType
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.GET
@@ -12,6 +16,7 @@ interface TheCatApi {
     suspend fun getAllBreeds(): Response<List<BreedDTO>>
 
     @GET("images/search?mime_types=gif")
+    @ErrorType(NOT_FOUND, NotFoundError::class)
     fun getRandomGif(): Flow<Result<List<BreedDTO.ImageDTO>>>
 
 }

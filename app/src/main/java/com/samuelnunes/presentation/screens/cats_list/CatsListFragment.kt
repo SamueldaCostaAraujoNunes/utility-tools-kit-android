@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import com.google.android.material.snackbar.Snackbar
-import com.samuelnunes.domain.utils.Resource
 import com.samuelnunes.utility_tool_kit.domain.Result
 import com.samuelnunes.utility_tool_kit.utils.toUiText
 import com.samuelnunes.utils.databinding.FragmentFirstBinding
@@ -51,7 +50,7 @@ class CatsListFragment : Fragment() {
 
     private fun populateBreedList() {
         viewModel.getAllBreeds().observe(viewLifecycleOwner) { res ->
-            when(res) {
+            when (res) {
                 is Result.Loading -> showLoading()
                 is Result.Empty -> hideLoading()
                 is Result.Success -> {
@@ -61,7 +60,11 @@ class CatsListFragment : Fragment() {
                 is Result.Error -> {
                     hideLoading()
                     res.data.let { breedListAdapter.submitList(it) }
-                    Snackbar.make(binding.root, res.exception.toUiText().value, Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(
+                        binding.root,
+                        res.exception.toUiText().value,
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -69,7 +72,7 @@ class CatsListFragment : Fragment() {
 
     private fun populateGifs() {
         viewModel.getCatsGifs().observe(viewLifecycleOwner) { res ->
-            when(res) {
+            when (res) {
                 is Result.Loading -> showLoading()
                 is Result.Empty -> hideLoading()
                 is Result.Success -> {
@@ -79,7 +82,11 @@ class CatsListFragment : Fragment() {
                 is Result.Error -> {
                     hideLoading()
                     res.data.let { catGifAdapter.submitList(it) }
-                    Snackbar.make(binding.root, res.exception.toUiText().value, Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(
+                        binding.root,
+                        res.exception.toUiText().value,
+                        Snackbar.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -92,5 +99,4 @@ class CatsListFragment : Fragment() {
     private fun hideLoading() {
         Timber.d("Hide Loading")
     }
-
 }

@@ -2,6 +2,7 @@ package com.samuelnunes.utility_tool_kit.network.LiveDataAdapter
 
 import androidx.lifecycle.LiveData
 import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.network.parseError
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Callback
@@ -10,7 +11,9 @@ import timber.log.Timber
 import java.lang.reflect.Type
 import java.util.concurrent.atomic.AtomicBoolean
 
-class LiveDataBodyCallAdapter<R>(private val responseType: Type) :
+class LiveDataBodyCallAdapter<R>(
+    private val responseType: Type
+) :
     CallAdapter<R, LiveData<R>> {
 
     override fun responseType(): Type {
@@ -44,7 +47,10 @@ class LiveDataBodyCallAdapter<R>(private val responseType: Type) :
     }
 }
 
-class LiveDataResultCallAdapter<R>(private val responseType: Type) : CallAdapter<R, LiveData<Result<R>>> {
+class LiveDataResultCallAdapter<R>(
+    private val responseType: Type,
+    private val annotations: Array<out Annotation>
+) : CallAdapter<R, LiveData<Result<R>>> {
 
     override fun responseType(): Type {
         return responseType
@@ -73,12 +79,15 @@ class LiveDataResultCallAdapter<R>(private val responseType: Type) : CallAdapter
                                     )
                                 }
                             } else {
-                                val errorBody = response.errorBody()?.charStream()?.readText()
-                                val errorMsg = response.message()
-                                Result.Error<R>(
-                                    message = errorMsg,
+                                val errorResponse = parseError(
                                     statusCode = statusCode,
-                                    errorBody = errorBody
+                                    responseBody = response.errorBody(),
+                                    annotations = annotations
+                                )
+                                Result.Error<R>(
+                                    message = response.message(),
+                                    statusCode = statusCode,
+                                    errorResponse = errorResponse
                                 )
                             }
                         }

@@ -23,10 +23,9 @@ class LiveDataCallAdapterFactory : CallAdapter.Factory() {
         return if(rawObservableType != Result::class.java) {
             LiveDataBodyCallAdapter<Type>(observableType)
         }else {
-            require(rawObservableType == Result::class.java) { "type must be a Result" }
             require(observableType is ParameterizedType) { "resource must be parameterized" }
             val bodyType: Type = getParameterUpperBound(0, observableType)
-            LiveDataResultCallAdapter<Type>(bodyType)
+            LiveDataResultCallAdapter<Type>(bodyType, annotations)
         }
     }
 

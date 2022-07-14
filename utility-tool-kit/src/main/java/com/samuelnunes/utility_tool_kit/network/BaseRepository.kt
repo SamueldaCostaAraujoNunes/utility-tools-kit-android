@@ -1,5 +1,6 @@
 package com.samuelnunes.utility_tool_kit.network
 
+import com.samuelnunes.utility_tool_kit.R
 import com.samuelnunes.utility_tool_kit.domain.Result
 import kotlinx.coroutines.flow.*
 import retrofit2.Response
@@ -49,14 +50,11 @@ abstract class BaseRepository {
                         }
                     }
                 } else {
-                    val errorBody = response.errorBody()?.charStream()?.readText()
-                    val errorMsg = response.message()
                     resultFlow.map {
                         Result.Error(
-                            message = errorMsg,
+                            message = response.message(),
                             data = it,
-                            statusCode = statusCode,
-                            errorBody = errorBody
+                            statusCode = statusCode
                         )
                     }
                 }

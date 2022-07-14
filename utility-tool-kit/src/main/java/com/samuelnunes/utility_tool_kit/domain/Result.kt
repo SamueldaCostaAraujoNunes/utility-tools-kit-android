@@ -27,21 +27,32 @@ sealed class Result<out T> {
         val exception: Exception,
         val data: T? = null,
         val statusCode: Int? = null,
-        val errorBody: String? = null,
+        val errorResponse: ErrorResponse? = null
+    ) : Result<T>() {
 
-        ) : Result<T>() {
-        constructor(throwable: Throwable, data: T? = null, errorBody: String? = null) : this(
+        open class ErrorResponse {
+
+        }
+
+        constructor(
+            throwable: Throwable, data: T? = null, errorResponse: ErrorResponse? = null
+        ) : this(
             exception = Exception(throwable),
             data = data,
-            errorBody = errorBody
+            errorResponse = errorResponse
         )
 
         constructor(
-            message: String,
+            message: String? = null,
             data: T? = null,
-            errorBody: String? = null,
-            statusCode: Int? = null
-        ) : this(Exception(message), data, statusCode, errorBody)
+            statusCode: Int? = null,
+            errorResponse: ErrorResponse? = null
+        ) : this(
+            exception = Exception(message),
+            data = data,
+            statusCode = statusCode,
+            errorResponse = errorResponse
+        )
 
         init {
             Timber.e(exception)
@@ -53,16 +64,16 @@ sealed class Result<out T> {
             is Loading -> "Loading..."
             is Empty -> "Empty"
             is Success -> "Success[data=$data, statusCode=$statusCode]"
-            is Error -> "Error[exception=$exception, data=$data, statusCode=$statusCode, errorBody=$errorBody]"
+            is Error -> "Error[exception=$exception, data=$data, statusCode=$statusCode, errorResponse=$errorResponse]"
         }
     }
 
     fun <D> map(mapper: (T?) -> D?): Result<D> {
-        return when(this){
+        return when (this) {
             is Loading -> Loading()
             is Empty -> Empty()
             is Success -> Success(mapper(data)!!, statusCode)
-            is Error -> Error(exception, mapper(data), statusCode, errorBody)
+            is Error -> Error(exception, mapper(data), statusCode, errorResponse)
         }
     }
 }
