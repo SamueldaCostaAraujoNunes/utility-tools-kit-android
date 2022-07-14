@@ -1,8 +1,7 @@
 package com.samuelnunes.domain.use_case
 
-import com.samuelnunes.domain.repository.ICatsRepository
-import com.samuelnunes.domain.utils.Resource
 import com.samuelnunes.domain.entity.Breed
+import com.samuelnunes.domain.repository.ICatsRepository
 import com.samuelnunes.utility_tool_kit.domain.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

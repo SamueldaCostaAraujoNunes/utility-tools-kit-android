@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.samuelnunes.domain.entity.Breed
+import com.samuelnunes.utility_tool_kit.binding.setDebounceListener
 import com.samuelnunes.utility_tool_kit.extensions.inflate
 import com.samuelnunes.utility_tool_kit.extensions.inflater
 import com.samuelnunes.utils.R
@@ -14,9 +15,8 @@ import com.samuelnunes.utils.databinding.ItemGifBinding
 internal class CatGifListAdapter(private val onImageClick: (Breed.Image) -> Unit) :
     ListAdapter<Breed.Image, CatGifListAdapter.ImageViewHolder>(ImageItemCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        return ImageViewHolder(ItemGifBinding.inflate(parent.inflater, parent, false))
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder =
+        ImageViewHolder(ItemGifBinding.inflate(parent.inflater, parent, false))
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) =
         holder.bind(getItem(position))
@@ -27,7 +27,7 @@ internal class CatGifListAdapter(private val onImageClick: (Breed.Image) -> Unit
         fun bind(item: Breed.Image) {
             binding.apply {
                 catUrl = item.url
-                root.setOnClickListener { onImageClick(item) }
+                root.setDebounceListener { onImageClick(item) }
             }
         }
     }
