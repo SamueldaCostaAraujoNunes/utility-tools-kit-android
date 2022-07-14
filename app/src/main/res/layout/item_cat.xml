@@ -38,11 +38,12 @@
                 <!-- Title, secondary and supporting text -->
                 <TextView
                     android:id="@+id/title"
-                    android:text="@{breed.name}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="@tools:sample/full_names"
-                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+                    android:fontFamily="@font/poppins"
+                    android:text="@{breed.name}"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    tools:text="@tools:sample/full_names" />
 
                 <TextView
                     android:id="@+id/description"
@@ -50,6 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:fontFamily="@font/poppins"
                     tools:text="@tools:sample/lorem"
                     android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?android:attr/textColorSecondary" />
@@ -67,6 +69,7 @@
                     android:id="@+id/bt_wikipedia"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
                     android:text="@string/wikipedia"
                     style="?attr/borderlessButtonStyle" />
             </LinearLayout>
