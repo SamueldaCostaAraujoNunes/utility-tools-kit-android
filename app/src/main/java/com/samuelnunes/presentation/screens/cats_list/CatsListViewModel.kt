@@ -57,13 +57,7 @@ class CatsListViewModel @Inject constructor(
             getCatsGifsUseCase().collect { result ->
                 hasLoading(result)
                 when (result) {
-                    is Result.Success -> {
-                        val value: List<Breed.Image> = _gifs.value ?: listOf()
-                        val mutableList = value.toMutableList()
-                        mutableList.addAll(result.data)
-                        mutableList.sortBy { it.id }
-                        _gifs.value = mutableList
-                    }
+                    is Result.Success -> _gifs.value = result.data
                     is Result.Error -> handleError(result, "Gifs")
                     else -> {}
                 }
