@@ -11,6 +11,7 @@ import com.samuelnunes.data.local.dao.CatsDao
 import com.samuelnunes.data.remote.api.TheCatApi
 import com.samuelnunes.data.repository.CatsRepository
 import com.samuelnunes.domain.repository.ICatsRepository
+import com.samuelnunes.utility_tool_kit.network.EnumConverter.EnumConverterFactory
 import com.samuelnunes.utility_tool_kit.network.FlowAdapter.FlowCallAdapterFactory
 import com.samuelnunes.utility_tool_kit.network.LiveDataAdapter.LiveDataCallAdapterFactory
 import dagger.Module
@@ -35,6 +36,7 @@ object NetworkModule {
     fun providerRetrofitBuilder(gson: Gson): Retrofit.Builder = Retrofit.Builder()
         .addCallAdapterFactory(LiveDataCallAdapterFactory.create())
         .addCallAdapterFactory(FlowCallAdapterFactory.create())
+        .addConverterFactory(EnumConverterFactory.create())
         .addConverterFactory(GsonConverterFactory.create(gson))
 
     @Singleton
