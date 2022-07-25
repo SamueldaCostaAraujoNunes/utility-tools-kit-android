@@ -9,9 +9,7 @@ import com.samuelnunes.utility_tool_kit.domain.Result
 import com.samuelnunes.utility_tool_kit.utils.UiText
 import com.samuelnunes.utils.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel

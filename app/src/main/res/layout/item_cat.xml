@@ -23,7 +23,7 @@
             <ImageView
                 android:id="@+id/iv_cat"
                 android:layout_width="match_parent"
-                android:layout_height="194dp"
+                android:layout_height="wrap_content"
                 app:visibleIf="@{breed.image.url != null}"
                 app:imageByUrl="@{breed.image.url}"
                 tools:srcCompat="@tools:sample/avatars"

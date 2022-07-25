@@ -23,7 +23,7 @@ sealed class Result<out T> {
 
     data class Error<out T>(
         val exception: Exception,
-        val data: T? = null,
+        val dataInCache: T? = null,
         val statusCode: Int? = null,
         val errorResponse: ErrorResponse? = null
     ) : Result<T>() {
@@ -32,22 +32,22 @@ sealed class Result<out T> {
 
         constructor(
             throwable: Throwable,
-            data: T? = null,
+            dataInCache: T? = null,
             errorResponse: ErrorResponse? = null
         ) : this(
             exception = Exception(throwable),
-            data = data,
+            dataInCache = dataInCache,
             errorResponse = errorResponse
         )
 
         constructor(
             message: String? = null,
-            data: T? = null,
+            dataInCache: T? = null,
             statusCode: Int? = null,
             errorResponse: ErrorResponse? = null
         ) : this(
             exception = Exception(message),
-            data = data,
+            dataInCache = dataInCache,
             statusCode = statusCode,
             errorResponse = errorResponse
         )
@@ -62,7 +62,7 @@ sealed class Result<out T> {
             is Loading -> "Loading..."
             is Empty -> "Empty"
             is Success -> "Success[data=$data, statusCode=$statusCode]"
-            is Error -> "Error[exception=$exception, data=$data, statusCode=$statusCode, errorResponse=$errorResponse]"
+            is Error -> "Error[exception=$exception, dataInCache=$dataInCache, statusCode=$statusCode, errorResponse=$errorResponse]"
         }
     }
 
@@ -71,7 +71,7 @@ sealed class Result<out T> {
             is Loading -> Loading()
             is Empty -> Empty()
             is Success -> Success(mapper(data)!!, statusCode)
-            is Error -> Error(exception, mapper(data), statusCode, errorResponse)
+            is Error -> Error(exception, mapper(dataInCache), statusCode, errorResponse)
         }
     }
 }
