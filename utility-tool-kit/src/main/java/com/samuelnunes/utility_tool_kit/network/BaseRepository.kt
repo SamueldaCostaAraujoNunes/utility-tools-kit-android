@@ -1,6 +1,5 @@
 package com.samuelnunes.utility_tool_kit.network
 
-import com.samuelnunes.utility_tool_kit.R
 import com.samuelnunes.utility_tool_kit.domain.Result
 import kotlinx.coroutines.flow.*
 import retrofit2.Response
@@ -38,7 +37,7 @@ abstract class BaseRepository {
 
                     if (body == null || statusCode == 204) {
                         resultFlow.map {
-                            Result.Empty()
+                            Result.Empty<LocalType>()
                         }
                     } else {
                         saveFetchResult(body)
@@ -53,7 +52,7 @@ abstract class BaseRepository {
                     resultFlow.map {
                         Result.Error(
                             message = response.message(),
-                            data = it,
+                            dataInCache = it,
                             statusCode = statusCode
                         )
                     }
@@ -62,8 +61,8 @@ abstract class BaseRepository {
                 onFetchFailed(throwable)
                 resultFlow.map {
                     Result.Error(
-                        throwable = throwable,
-                        data = it
+                        dataInCache = it,
+                        throwable = throwable
                     )
                 }
             }
