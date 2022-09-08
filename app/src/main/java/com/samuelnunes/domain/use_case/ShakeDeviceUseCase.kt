@@ -18,12 +18,13 @@ class ShakeDeviceUseCase @Inject constructor(
 
 
     operator fun invoke(): Flow<Boolean> = sensor.observe().map {
+        lastAcceleration = currentAcceleration
         it.apply {
             currentAcceleration = sqrt(x.pow(2) + y.pow(2) + z.pow(2))
         }
         acceleration = acceleration * 0.9f + (currentAcceleration - lastAcceleration)
-        if(acceleration !in -7F..7F) avgShaking++ else avgShaking = 0
-        return@map avgShaking >= 8
+        if(acceleration !in -4F..4F) avgShaking++ else avgShaking = 0
+        return@map avgShaking >= 6
     }
 
 }
