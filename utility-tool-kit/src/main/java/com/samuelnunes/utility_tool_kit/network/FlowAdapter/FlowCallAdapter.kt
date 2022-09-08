@@ -19,6 +19,7 @@ class FlowResultCallAdapter<R>(
 ) : CallAdapter<R, Flow<Result<R>>> {
     override fun adapt(call: Call<R>): Flow<Result<R>> {
         return flow {
+            emit(Result.Loading())
             emit(
                 suspendCancellableCoroutine { continuation ->
                     call.clone().enqueue(object : Callback<R> {

@@ -6,6 +6,7 @@ import com.samuelnunes.domain.entity.Breed
 import com.samuelnunes.domain.use_case.GetAllBreedsUseCase
 import com.samuelnunes.domain.use_case.GetCatsGifsUseCase
 import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.network.NetworkConnectivityObserver
 import com.samuelnunes.utility_tool_kit.utils.UiText
 import com.samuelnunes.utils.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,13 +16,15 @@ import javax.inject.Inject
 @HiltViewModel
 class CatsListViewModel @Inject constructor(
     private var getAllBreedsUseCase: GetAllBreedsUseCase,
-    private var getCatsGifsUseCase: GetCatsGifsUseCase
-): ViewModel() {
+    private var getCatsGifsUseCase: GetCatsGifsUseCase,
+    private var networkConnectivityObserver: NetworkConnectivityObserver
+) : ViewModel() {
 
     private val _loading: MutableLiveData<Int> = MutableLiveData(0)
     private val _error: MutableLiveData<UiText> = MutableLiveData()
     private val _gifs: MutableLiveData<List<Breed.Image>> = MutableLiveData()
     private val _breeds: MutableLiveData<List<Breed>> = MutableLiveData()
+    private val _networkConnectivity: MutableLiveData<Boolean> = MutableLiveData()
 
     val loading: LiveData<Boolean>
         get() = _loading.map { it > 0 }
@@ -31,11 +34,22 @@ class CatsListViewModel @Inject constructor(
         get() = _gifs
     val breeds: LiveData<List<Breed>>
         get() = _breeds
+    val networkConnectivity: LiveData<Boolean>
+        get() = _networkConnectivity
 
     init {
-        fetchNewGifs()
-        fetchBreeds()
+        viewModelScope.launch {
+            networkConnectivityObserver.observe().collect { status ->
+                val hasConnection = status.hasConnection()
+                _networkConnectivity.value = hasConnection
+                if (hasConnection) {
+                    fetchNewGifs()
+                    fetchBreeds()
+                }
+            }
+        }
     }
+
 
     private fun fetchBreeds() {
         viewModelScope.launch {
@@ -55,7 +69,7 @@ class CatsListViewModel @Inject constructor(
             getCatsGifsUseCase().collect { result ->
                 hasLoading(result)
                 when (result) {
-                    is Result.Success -> _gifs.value = result.data
+                    is Result.Success ->  _gifs.value = result.data
                     is Result.Error -> handleError(result, "Gifs")
                     else -> {}
                 }
@@ -65,7 +79,7 @@ class CatsListViewModel @Inject constructor(
 
     private fun handleError(result: Result.Error<*>, source: String) {
         val errorResponse = result.errorResponse
-        _error.value = if(errorResponse is NotFoundError) {
+        _error.value = if (errorResponse is NotFoundError) {
             UiText.DynamicString(errorResponse.message)
         } else {
             UiText.StringResource(R.string.error_in_fetch, source)
@@ -73,11 +87,10 @@ class CatsListViewModel @Inject constructor(
     }
 
     private fun hasLoading(result: Result<*>) {
-        if(result is Result.Loading){
+        if (result is Result.Loading) {
             _loading.value = _loading.value?.plus(1)
         } else {
-            _loading.value= _loading.value?.minus(1)
+            _loading.value = _loading.value?.minus(1)
         }
     }
-
 }

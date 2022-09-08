@@ -4,18 +4,24 @@ import android.Manifest
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NetworkConnectivityObserver(
+@RequiresApi(Build.VERSION_CODES.N)
+class NetworkConnectivityObserver @Inject constructor(
     context: Context
 ) {
     enum class Status {
-        AVAILABLE, UNAVAILABLE, LOSING, LOST
+        AVAILABLE, UNAVAILABLE, LOSING, LOST;
+
+        fun hasConnection(): Boolean = this == AVAILABLE || this == LOSING
     }
 
     private val connectivityManager =

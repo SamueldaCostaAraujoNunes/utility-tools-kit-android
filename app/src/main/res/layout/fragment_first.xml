@@ -1,17 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context="com.samuelnunes.presentation.screens.cats_list.CatsListFragment">
+
+    <TextView
+        android:id="@+id/card_network_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffdd00"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:text="Sem Conexão!!"
+        android:textColor="#000000"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:layout_marginTop="16dp"
         android:indeterminate="true" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -24,4 +39,5 @@
         tools:itemCount="3"
         tools:listitem="@layout/item_cat" />
 
-</FrameLayout>
+
+</LinearLayout>

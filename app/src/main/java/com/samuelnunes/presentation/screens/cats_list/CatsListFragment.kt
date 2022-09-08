@@ -10,9 +10,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import com.google.android.material.snackbar.Snackbar
 import com.samuelnunes.domain.entity.Breed
+import com.samuelnunes.utility_tool_kit.binding.goneIf
 import com.samuelnunes.utility_tool_kit.binding.visibleIf
-import com.samuelnunes.utility_tool_kit.extensions.inflate
-import com.samuelnunes.utils.R
 import com.samuelnunes.utils.databinding.FragmentFirstBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,31 +41,27 @@ class CatsListFragment : Fragment() {
         loadingState()
         populateGifs()
         populateBreedList()
+        networkState()
     }
 
     private fun errorNotify() {
         viewModel.error.observe(viewLifecycleOwner) { error ->
-            Snackbar.make(binding.root, error.toString(requireContext()), Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, error.toString(requireContext()), Snackbar.LENGTH_SHORT)
+                .show()
         }
     }
 
-    private fun loadingState() {
-        viewModel.loading.observe(viewLifecycleOwner) { loading ->
-            binding.loading.visibleIf(loading)
-        }
-    }
+    private fun loadingState() =
+        viewModel.loading.observe(viewLifecycleOwner, binding.loading::visibleIf)
 
-    private fun populateBreedList() {
-        viewModel.breeds.observe(viewLifecycleOwner) { breeds ->
-            breedListAdapter.submitList(breeds)
-        }
-    }
+    private fun populateBreedList() =
+        viewModel.breeds.observe(viewLifecycleOwner, breedListAdapter::submitList)
 
-    private fun populateGifs() {
-        viewModel.gifs.observe(viewLifecycleOwner) { gifs ->
-            catGifAdapter.submitList(gifs)
-        }
-    }
+    private fun populateGifs() =
+        viewModel.gifs.observe(viewLifecycleOwner, catGifAdapter::submitList)
+
+    private fun networkState() =
+        viewModel.networkConnectivity.observe(viewLifecycleOwner, binding.cardNetworkState::goneIf)
 
     private fun clickBreedItem(breed: Breed) {
         val direction = CatsListFragmentDirections
@@ -75,4 +70,5 @@ class CatsListFragment : Fragment() {
     }
 
     private fun fetchNewGifs(image: Breed.Image) = viewModel.fetchNewGifs()
+
 }

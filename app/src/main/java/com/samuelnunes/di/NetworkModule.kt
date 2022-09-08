@@ -14,6 +14,7 @@ import com.samuelnunes.domain.repository.ICatsRepository
 import com.samuelnunes.utility_tool_kit.network.EnumConverter.EnumConverterFactory
 import com.samuelnunes.utility_tool_kit.network.FlowAdapter.FlowCallAdapterFactory
 import com.samuelnunes.utility_tool_kit.network.LiveDataAdapter.LiveDataCallAdapterFactory
+import com.samuelnunes.utility_tool_kit.network.NetworkConnectivityObserver
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,6 +56,10 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideCharacterDao(db: AppDatabase): CatsDao = db.catsDao()
+
+    @Singleton
+    @Provides
+    fun provideNetworkConnection(@ApplicationContext appContext: Context): NetworkConnectivityObserver = NetworkConnectivityObserver(appContext)
 
     @Singleton
     @Provides
