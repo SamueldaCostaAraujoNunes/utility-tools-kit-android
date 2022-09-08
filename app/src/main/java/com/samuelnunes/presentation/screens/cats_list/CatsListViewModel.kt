@@ -40,7 +40,7 @@ class CatsListViewModel @Inject constructor(
         get() = _networkConnectivity
 
     val isShaking: LiveData<Boolean>
-        get() = shakeDeviceUseCase.invoke().asLiveData()
+        get() = shakeDeviceUseCase().asLiveData()
 
     init {
         viewModelScope.launch {
