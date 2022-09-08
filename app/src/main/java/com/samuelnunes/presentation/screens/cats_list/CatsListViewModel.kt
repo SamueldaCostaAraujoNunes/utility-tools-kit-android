@@ -5,6 +5,7 @@ import com.samuelnunes.data.dto.response.error.NotFoundError
 import com.samuelnunes.domain.entity.Breed
 import com.samuelnunes.domain.use_case.GetAllBreedsUseCase
 import com.samuelnunes.domain.use_case.GetCatsGifsUseCase
+import com.samuelnunes.domain.use_case.ShakeDeviceUseCase
 import com.samuelnunes.utility_tool_kit.domain.Result
 import com.samuelnunes.utility_tool_kit.network.NetworkConnectivityObserver
 import com.samuelnunes.utility_tool_kit.utils.UiText
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class CatsListViewModel @Inject constructor(
     private var getAllBreedsUseCase: GetAllBreedsUseCase,
     private var getCatsGifsUseCase: GetCatsGifsUseCase,
+    private var shakeDeviceUseCase: ShakeDeviceUseCase,
     private var networkConnectivityObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
@@ -36,6 +38,9 @@ class CatsListViewModel @Inject constructor(
         get() = _breeds
     val networkConnectivity: LiveData<Boolean>
         get() = _networkConnectivity
+
+    val isShaking: LiveData<Boolean>
+        get() = shakeDeviceUseCase.invoke().asLiveData()
 
     init {
         viewModelScope.launch {
