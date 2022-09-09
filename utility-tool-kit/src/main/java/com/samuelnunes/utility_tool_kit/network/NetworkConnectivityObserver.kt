@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
+import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
@@ -30,6 +31,18 @@ class NetworkConnectivityObserver @Inject constructor(
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     fun observe(): Flow<Status> {
         return callbackFlow {
+            val networkCapabilities = connectivityManager.activeNetwork
+            val actNw = connectivityManager.getNetworkCapabilities(networkCapabilities)
+            if (actNw != null) {
+                when {
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> send(Status.AVAILABLE)
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> send(Status.AVAILABLE)
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> send(Status.AVAILABLE)
+                    else -> send(Status.LOST)
+                }
+            } else {
+                send(Status.LOST)
+            }
             val callback = object : ConnectivityManager.NetworkCallback() {
 
                 override fun onAvailable(network: Network) {
