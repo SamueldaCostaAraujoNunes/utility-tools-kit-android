@@ -1,6 +1,7 @@
 package com.samuelnunes.domain.use_case
 
 import android.hardware.SensorManager
+import androidx.lifecycle.Transformations.map
 import com.samuelnunes.utility_tool_kit.sensor.AccelerometerSensor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

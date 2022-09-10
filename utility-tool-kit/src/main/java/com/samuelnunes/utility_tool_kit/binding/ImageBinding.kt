@@ -53,7 +53,6 @@ fun imageUrl(
     if (crossFade == true) request = request.transition(DrawableTransitionOptions.withCrossFade())
 
     if (listener != null) {
-        Timber.d("Listener is not null...")
         request = request.listener(object : RequestListener<Drawable> {
             override fun onResourceReady(
                 resource: Drawable?,

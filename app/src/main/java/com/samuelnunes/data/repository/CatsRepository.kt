@@ -1,9 +1,9 @@
 package com.samuelnunes.data.repository
 
 import com.samuelnunes.data.dto.request.query.TypeImages
-import com.samuelnunes.data.remote.api.TheCatApi
 import com.samuelnunes.data.dto.response.BreedDTO
 import com.samuelnunes.data.local.dao.CatsDao
+import com.samuelnunes.data.remote.api.TheCatApi
 import com.samuelnunes.domain.repository.ICatsRepository
 import com.samuelnunes.utility_tool_kit.domain.Result
 import com.samuelnunes.utility_tool_kit.network.BaseRepository
@@ -22,6 +22,6 @@ class CatsRepository @Inject constructor(
     )
 
     override fun getCatsGifs(): Flow<Result<List<BreedDTO.ImageDTO>>> =
-        api.getRandomImage(TypeImages.GIF)
+        api.getRandomImage(mimeTypes = TypeImages.GIF)
 
 }
