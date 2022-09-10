@@ -32,7 +32,7 @@ abstract class AndroidSensor<T>(context: Context, typeSensor: Int, systemFeature
             val listener = object : SensorEventListener {
                 override fun onSensorChanged(event: SensorEvent?) {
                     if (event != null) {
-                        launch { send(convert(event)) }
+                        trySend(convert(event))
                     }
                 }
 
