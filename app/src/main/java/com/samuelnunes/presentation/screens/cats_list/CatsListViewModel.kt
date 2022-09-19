@@ -38,7 +38,6 @@ class CatsListViewModel @Inject constructor(
         get() = _breeds
     val networkConnectivity: LiveData<Boolean>
         get() = _networkConnectivity
-
     val isShaking: LiveData<Boolean>
         get() = shakeDeviceUseCase().asLiveData()
 
@@ -49,10 +48,10 @@ class CatsListViewModel @Inject constructor(
                 _networkConnectivity.value = hasConnection
                 if (hasConnection) {
                     fetchNewGifs()
-                    fetchBreeds()
                 }
             }
         }
+        fetchBreeds()
     }
 
 
@@ -87,7 +86,7 @@ class CatsListViewModel @Inject constructor(
         _error.value = if (errorResponse is NotFoundError) {
             UiText.DynamicString(errorResponse.message)
         } else {
-            UiText.StringResource(R.string.error_in_fetch, source)
+            UiText.StringResource(R.string.error_in_fetch_cats, source)
         }
     }
 

@@ -40,7 +40,7 @@ android {
 dependencies {
     implementation project(':utility-tool-kit')
     // Hilt
-    def hilt_dagger_version = "2.41"
+    def hilt_dagger_version = "2.42"
     implementation "com.google.dagger:hilt-android:$hilt_dagger_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_dagger_version"
 

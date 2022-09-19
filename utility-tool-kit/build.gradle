@@ -58,8 +58,9 @@ dependencies {
     implementation 'androidx.room:room-ktx:2.4.3'
 
     // Hilt
-    implementation "com.google.dagger:hilt-android:2.41"
-    kapt "com.google.dagger:hilt-compiler:2.41"
+    def hilt_dagger_version = "2.42"
+    implementation "com.google.dagger:hilt-android:$hilt_dagger_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_dagger_version"
 
     // Logs
     implementation "com.jakewharton.timber:timber:5.0.1"

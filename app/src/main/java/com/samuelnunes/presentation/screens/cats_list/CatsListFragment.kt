@@ -66,13 +66,13 @@ class CatsListFragment : Fragment() {
         viewModel.networkConnectivity.observe(viewLifecycleOwner, binding.cardNetworkState::goneIf)
 
     private fun clickBreedItem(breed: Breed) {
-        val direction = CatsListFragmentDirections
-            .actionBreedFragmentToWikipediaPage(breed.wikipediaName!!)
+//        val direction = CatsListFragmentDirections
+//            .actionBreedFragmentToWikipediaPage(breed.wikipediaName!!)
+        val direction = CatsListFragmentDirections.actionBreedFragmentToCatDetailFragment(breed.id)
         findNavController().navigate(direction)
     }
 
     private fun fetchNewGifs(image: Breed.Image) = viewModel.fetchNewGifs()
-
 
     private fun isShaking() = viewModel.isShaking.observe(viewLifecycleOwner) { isShaking ->
         if(isShaking) {

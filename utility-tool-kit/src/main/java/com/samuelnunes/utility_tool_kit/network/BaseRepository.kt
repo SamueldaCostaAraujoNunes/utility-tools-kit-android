@@ -37,7 +37,7 @@ abstract class BaseRepository {
 
                     if (body == null || statusCode == 204) {
                         resultFlow.map {
-                            Result.Empty<LocalType>()
+                            Result.Empty()
                         }
                     } else {
                         saveFetchResult(body)

@@ -7,7 +7,11 @@ import com.samuelnunes.utility_tool_kit.database.dao.BaseDao
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CatsDao: BaseDao<BreedDTO> {
+interface CatsDao : BaseDao<BreedDTO> {
+
+
+    @Query("SELECT * FROM BreedDTO WHERE id=:id")
+    fun getBreed(id: String): Flow<BreedDTO>
 
     fun getAll(isAsc: Boolean) = if (isAsc) getAllAsc() else getAllDesc()
 

@@ -71,9 +71,46 @@ data class BreedDTO(
     @SerializedName("wikipedia_url")
     val wikipediaUrl: String?
 ) {
-    fun toBreed(): Breed = Breed(id, image?.toImage(), name, description, sanitizeWikepedia())
-
-    private fun sanitizeWikepedia() = wikipediaUrl?.split("wiki/")?.get(1)
+    fun toBreed(): Breed = Breed(
+        adaptability,
+        affectionLevel,
+        altNames,
+        cfaUrl,
+        childFriendly,
+        countryCode,
+        countryCodes,
+        description,
+        dogFriendly,
+        energyLevel,
+        experimental,
+        grooming,
+        hairless,
+        healthIssues,
+        hypoallergenic,
+        id,
+        image?.toImage() ?: Breed.Image(),
+        indoor,
+        intelligence,
+        lap,
+        lifeSpan,
+        name,
+        natural,
+        origin,
+        rare,
+        referenceImageId,
+        rex,
+        sheddingLevel,
+        shortLegs,
+        socialNeeds,
+        strangerFriendly,
+        suppressedTail,
+        temperament,
+        vcahospitalsUrl,
+        vetstreetUrl,
+        vocalisation,
+        weight.toWeight(),
+        wikipediaUrl
+    )
 
     data class ImageDTO(
         val height: Int?,
@@ -88,5 +125,7 @@ data class BreedDTO(
     data class WeightDTO(
         val imperial: String,
         val metric: String
-    )
+    ) {
+        fun toWeight() = Breed.Weight(imperial, metric)
+    }
 }

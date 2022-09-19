@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_BreedFragment_to_wikipedia_page"
             app:destination="@id/wikipedia_page" />
+        <action
+            android:id="@+id/action_BreedFragment_to_catDetailFragment"
+            app:destination="@id/catDetailFragment" />
     </fragment>
 
     <activity
@@ -24,5 +27,18 @@
             app:argType="string"
             app:nullable="false"/>
     </activity>
+
+    <fragment
+        android:id="@+id/catDetailFragment"
+        android:name="com.samuelnunes.presentation.screens.cats_detail.CatDetailFragment"
+        android:label="fragment_cat_detail"
+        tools:layout="@layout/fragment_cat_detail">
+
+        <argument
+            android:name="id"
+            app:argType="string"
+            app:nullable="false"/>
+
+    </fragment>
 
 </navigation>
