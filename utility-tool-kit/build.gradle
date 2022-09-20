@@ -82,7 +82,7 @@ afterEvaluate {
 
                 groupId = 'com.github.SamueldaCostaAraujoNunes'
                 artifactId = 'utility-tools-kit-android'
-                version = '1.0'
+                version = '1.6'
             }
         }
     }
