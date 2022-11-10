@@ -41,6 +41,12 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.10"
 
+    // Lifecycle
+    def lifecycle_version = "2.5.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+
+
     // Android X
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation "androidx.annotation:annotation:1.4.0"

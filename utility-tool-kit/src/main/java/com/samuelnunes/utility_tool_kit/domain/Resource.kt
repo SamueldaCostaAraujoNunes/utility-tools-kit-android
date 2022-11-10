@@ -1,6 +1,8 @@
 package com.samuelnunes.utility_tool_kit.domain
 
+import com.samuelnunes.utility_tool_kit.network.HttpStatusCode
 import timber.log.Timber
+import java.io.Serializable
 
 
 sealed class Resource<out T> {
@@ -17,21 +19,21 @@ sealed class Resource<out T> {
         init { Timber.d(toString()) }
     }
 
-    data class Success<out T>(val data: T, val statusCode: Int = 200) : Resource<T>() {
+    data class Success<out T>(val data: T, val statusCode: HttpStatusCode = HttpStatusCode.OK) : Resource<T>() {
         init { Timber.d(toString()) }
     }
 
     data class Error<out T>(
         val exception: Exception,
         val dataInCache: T? = null,
-        val statusCode: Int? = null,
-        val errorData: Any? = null
+        val statusCode: HttpStatusCode? = null,
+        val errorData: Serializable? = null
     ) : Resource<T>() {
 
         constructor(
             throwable: Throwable,
             dataInCache: T? = null,
-            errorData: Any? = null
+            errorData: Serializable? = null
         ) : this(
             exception = Exception(throwable),
             dataInCache = dataInCache,
@@ -41,8 +43,8 @@ sealed class Resource<out T> {
         constructor(
             message: String? = null,
             dataInCache: T? = null,
-            statusCode: Int? = null,
-            errorData: Any? = null
+            statusCode: HttpStatusCode? = null,
+            errorData: Serializable? = null
         ) : this(
             exception = Exception(message),
             dataInCache = dataInCache,
@@ -63,7 +65,7 @@ sealed class Resource<out T> {
         }
     }
 
-    fun <D> map(mapperSuccess: (T?) -> D?, mapperError: (Any?) -> Any? = { it }): Resource<D> {
+    fun <D> map(mapperSuccess: (T?) -> D?, mapperError: (Serializable?) -> Serializable? = { it }): Resource<D> {
         return when (this) {
             is Loading -> Loading()
             is Empty -> Empty()

@@ -22,6 +22,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -43,7 +44,7 @@ object NetworkModule {
     @Singleton
     @Provides
     fun providerTheCatApiService(builder: Retrofit.Builder): TheCatApi =
-        builder.baseUrl(CATS_API_BASE_URL).build().create(TheCatApi::class.java)
+        builder.baseUrl(CATS_API_BASE_URL).build().create()
 
     @Provides
     @Singleton

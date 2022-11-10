@@ -1,6 +1,7 @@
 package com.samuelnunes.utility_tool_kit.network.naturalAdapter
 
 import com.samuelnunes.utility_tool_kit.domain.Resource
+import com.samuelnunes.utility_tool_kit.network.HttpStatusCode
 import com.samuelnunes.utility_tool_kit.network.parseError
 import okhttp3.Request
 import okio.Timeout
@@ -8,7 +9,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ResourceCall<T>(val delegate: Call<T>, val annotations: Array<out Annotation>) :
+class ResourceCall<T>(private val delegate: Call<T>, val annotations: Array<out Annotation>) :
     Call<Resource<T>> {
 
     override fun enqueue(callback: Callback<Resource<T>>) {
@@ -38,7 +39,7 @@ class ResourceCall<T>(val delegate: Call<T>, val annotations: Array<out Annotati
                 } else {
                     Resource.Success(
                         data = body,
-                        statusCode = statusCode
+                        statusCode = HttpStatusCode.enumByStatusCode(statusCode)
                     )
                 }
             } else {
@@ -49,7 +50,7 @@ class ResourceCall<T>(val delegate: Call<T>, val annotations: Array<out Annotati
                 )
                 Resource.Error(
                     message = response.message(),
-                    statusCode = statusCode,
+                    statusCode = HttpStatusCode.enumByStatusCode(statusCode),
                     errorData = errorResponse
                 )
             }

@@ -2,7 +2,6 @@ package com.samuelnunes.utility_tool_kit.network.FlowAdapter
 
 import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.naturalAdapter.ResourceCall
-import com.samuelnunes.utility_tool_kit.network.parseError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -19,21 +18,24 @@ class FlowResultCallAdapter<R>(
     private val annotations: Array<out Annotation>
 ) : CallAdapter<R, Flow<Resource<R>>> {
     override fun adapt(delegate: Call<R>): Flow<Resource<R>> {
+        val resourceCall = ResourceCall(delegate, annotations)
         return flow {
             emit(Resource.Loading())
             emit(
                 suspendCancellableCoroutine { continuation ->
-                    ResourceCall(delegate, annotations).enqueue(object : Callback<Resource<R>> {
+                    resourceCall.enqueue(object : Callback<Resource<R>> {
                         override fun onResponse(
                             call: Call<Resource<R>>,
                             response: Response<Resource<R>>
                         ) {
                             continuation.resume(response.body()!!)
                         }
-                        override fun onFailure(call: Call<Resource<R>>, t: Throwable) {}
+                        override fun onFailure(call: Call<Resource<R>>, t: Throwable) {
+                            continuation.resumeWithException(t)
+                        }
 
                     })
-                    continuation.invokeOnCancellation { delegate.cancel() }
+                    continuation.invokeOnCancellation { resourceCall.cancel() }
                 }
             )
         }
@@ -48,7 +50,7 @@ class FlowBodyCallAdapter<T>(private val responseType: Type) : CallAdapter<T, Fl
         return flow {
             emit(
                 suspendCancellableCoroutine { continuation ->
-                    call.clone().enqueue(object : Callback<T> {
+                    call.enqueue(object : Callback<T> {
                         override fun onFailure(call: Call<T>, t: Throwable) {
                             continuation.resumeWithException(t)
                         }

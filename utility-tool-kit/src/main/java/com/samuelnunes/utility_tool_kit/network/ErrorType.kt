@@ -2,6 +2,7 @@ package com.samuelnunes.utility_tool_kit.network
 
 import com.google.gson.Gson
 import okhttp3.ResponseBody
+import java.io.Serializable
 import kotlin.reflect.KClass
 
 
@@ -9,7 +10,7 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.RUNTIME)
 @Repeatable
 annotation class ErrorType(
-    val kClass: KClass<out Any>,
+    val kClass: KClass<out Serializable>,
     vararg val httpStatusCodeError: HttpStatusCode
 )
 
@@ -17,7 +18,7 @@ fun parseError(
     statusCode: Int,
     responseBody: ResponseBody?,
     annotations: Array<out Annotation>
-): Any? {
+): Serializable? {
     val errorBody = responseBody?.charStream()?.readText() ?: return null
 
     val errorType: ErrorType = annotations.find {

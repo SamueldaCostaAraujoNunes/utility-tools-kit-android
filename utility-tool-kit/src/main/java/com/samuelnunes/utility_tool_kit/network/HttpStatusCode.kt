@@ -64,7 +64,8 @@ enum class HttpStatusCode(val statusCode: Int) {
     INSUFFICIENT_STORAGE(507),
     LOOP_DETECTED(508),
     NOT_EXTENDED(510),
-    NETWORK_AUTHENTICATION_REQUIRED(511);
+    NETWORK_AUTHENTICATION_REQUIRED(511),
+    UNKNOWN(0);
 
     companion object {
 
@@ -82,6 +83,6 @@ enum class HttpStatusCode(val statusCode: Int) {
 
         fun isServerError(code: Int): Boolean = code in 500..599
 
+        fun enumByStatusCode(statusCode: Int) = values().find { it.statusCode == statusCode } ?: UNKNOWN
     }
-    fun enumByStatusCode(statusCode: Int) = values().find { it.statusCode == statusCode }
 }
