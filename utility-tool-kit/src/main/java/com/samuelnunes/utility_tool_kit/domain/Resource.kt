@@ -3,21 +3,21 @@ package com.samuelnunes.utility_tool_kit.domain
 import timber.log.Timber
 
 
-sealed class Result<out T> {
+sealed class Resource<out T> {
 
     init {
         Timber.tag("Result")
     }
 
-    class Loading<out T> : Result<T>() {
+    class Loading<out T> : Resource<T>() {
         init { Timber.d(toString()) }
     }
 
-    class Empty<out T> : Result<T>() {
+    class Empty<out T> : Resource<T>() {
         init { Timber.d(toString()) }
     }
 
-    data class Success<out T>(val data: T, val statusCode: Int = 200) : Result<T>() {
+    data class Success<out T>(val data: T, val statusCode: Int = 200) : Resource<T>() {
         init { Timber.d(toString()) }
     }
 
@@ -26,7 +26,7 @@ sealed class Result<out T> {
         val dataInCache: T? = null,
         val statusCode: Int? = null,
         val errorResponse: ErrorResponse? = null
-    ) : Result<T>() {
+    ) : Resource<T>() {
 
         abstract class ErrorResponse {}
 
@@ -66,7 +66,7 @@ sealed class Result<out T> {
         }
     }
 
-    fun <D> map(mapper: (T?) -> D?): Result<D> {
+    fun <D> map(mapper: (T?) -> D?): Resource<D> {
         return when (this) {
             is Loading -> Loading()
             is Empty -> Empty()
@@ -76,9 +76,9 @@ sealed class Result<out T> {
     }
 }
 
-val Result<*>.succeeded
-    get() = this is Result.Success && data != null
+val Resource<*>.succeeded
+    get() = this is Resource.Success && data != null
 
-fun <T> Result<T>.successOr(fallback: T): T {
-    return (this as? Result.Success<T>)?.data ?: fallback
+fun <T> Resource<T>.successOr(fallback: T): T {
+    return (this as? Resource.Success<T>)?.data ?: fallback
 }

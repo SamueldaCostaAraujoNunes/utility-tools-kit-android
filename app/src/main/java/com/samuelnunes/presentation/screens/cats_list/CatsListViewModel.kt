@@ -6,7 +6,7 @@ import com.samuelnunes.domain.entity.Breed
 import com.samuelnunes.domain.use_case.GetAllBreedsUseCase
 import com.samuelnunes.domain.use_case.GetCatsGifsUseCase
 import com.samuelnunes.domain.use_case.ShakeDeviceUseCase
-import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.NetworkConnectivityObserver
 import com.samuelnunes.utility_tool_kit.utils.UiText
 import com.samuelnunes.utils.R
@@ -60,8 +60,8 @@ class CatsListViewModel @Inject constructor(
             getAllBreedsUseCase().collect { result ->
                 hasLoading(result)
                 when (result) {
-                    is Result.Success -> _breeds.value = result.data
-                    is Result.Error -> handleError(result, "Gatos")
+                    is Resource.Success -> _breeds.value = result.data
+                    is Resource.Error -> handleError(result, "Gatos")
                     else -> {}
                 }
             }
@@ -73,16 +73,16 @@ class CatsListViewModel @Inject constructor(
             getCatsGifsUseCase().collect { result ->
                 hasLoading(result)
                 when (result) {
-                    is Result.Success ->  _gifs.value = result.data
-                    is Result.Error -> handleError(result, "Gifs")
+                    is Resource.Success ->  _gifs.value = result.data
+                    is Resource.Error -> handleError(result, "Gifs")
                     else -> {}
                 }
             }
         }
     }
 
-    private fun handleError(result: Result.Error<*>, source: String) {
-        val errorResponse = result.errorResponse
+    private fun handleError(resource: Resource.Error<*>, source: String) {
+        val errorResponse = resource.errorResponse
         _error.value = if (errorResponse is NotFoundError) {
             UiText.DynamicString(errorResponse.message)
         } else {
@@ -90,8 +90,8 @@ class CatsListViewModel @Inject constructor(
         }
     }
 
-    private fun hasLoading(result: Result<*>) {
-        if (result is Result.Loading) {
+    private fun hasLoading(resource: Resource<*>) {
+        if (resource is Resource.Loading) {
             _loading.value = _loading.value?.plus(1)
         } else {
             _loading.value = _loading.value?.minus(1)

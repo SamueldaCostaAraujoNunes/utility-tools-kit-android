@@ -4,7 +4,7 @@ import androidx.lifecycle.*
 import com.samuelnunes.data.dto.response.error.NotFoundError
 import com.samuelnunes.domain.entity.Breed
 import com.samuelnunes.domain.use_case.GetBreedUseCase
-import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.NetworkConnectivityObserver
 import com.samuelnunes.utility_tool_kit.utils.UiText
 import com.samuelnunes.utils.R
@@ -45,16 +45,16 @@ class CatDetailViewModel @Inject constructor(
             getBreedUseCase(id).collect { breed ->
                 hasLoading(breed)
                 when (breed) {
-                    is Result.Success -> _breed.value = breed.data
-                    is Result.Error -> handleError(breed)
+                    is Resource.Success -> _breed.value = breed.data
+                    is Resource.Error -> handleError(breed)
                     else -> {}
                 }
             }
         }
     }
 
-    private fun handleError(result: Result.Error<*>) {
-        val errorResponse = result.errorResponse
+    private fun handleError(resource: Resource.Error<*>) {
+        val errorResponse = resource.errorResponse
         _error.value = if (errorResponse is NotFoundError) {
             UiText.DynamicString(errorResponse.message)
         } else {
@@ -62,8 +62,8 @@ class CatDetailViewModel @Inject constructor(
         }
     }
 
-    private fun hasLoading(result: Result<*>) {
-        if (result is Result.Loading) {
+    private fun hasLoading(resource: Resource<*>) {
+        if (resource is Resource.Loading) {
             _loading.value = _loading.value?.plus(1)
         } else {
             _loading.value = _loading.value?.minus(1)

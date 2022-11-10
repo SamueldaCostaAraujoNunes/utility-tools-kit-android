@@ -6,7 +6,7 @@ import com.samuelnunes.data.dto.request.query.TypeImages
 import com.samuelnunes.data.dto.response.BreedDTO
 import com.samuelnunes.data.dto.response.error.NotFoundError
 import com.samuelnunes.utility_tool_kit.domain.HttpStatusCodeError.NOT_FOUND
-import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.ErrorType
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
@@ -33,6 +33,6 @@ interface TheCatApi {
         @Query("breed_ids") breedIds: Int? = null,
         @Query("category_ids") category: Int? = null,
         @Query("sub_id") subId: Int? = null
-    ): Flow<Result<List<BreedDTO.ImageDTO>>>
+    ): Flow<Resource<List<BreedDTO.ImageDTO>>>
 
 }

@@ -1,7 +1,7 @@
 package com.samuelnunes.utility_tool_kit.network.LiveDataAdapter
 
 import androidx.lifecycle.LiveData
-import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.domain.Resource
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import java.lang.reflect.ParameterizedType
@@ -20,7 +20,7 @@ class LiveDataCallAdapterFactory : CallAdapter.Factory() {
         }
         val observableType: Type = getParameterUpperBound(0, returnType as ParameterizedType)
         val rawObservableType = getRawType(observableType)
-        return if(rawObservableType != Result::class.java) {
+        return if(rawObservableType != Resource::class.java) {
             LiveDataBodyCallAdapter<Type>(observableType)
         }else {
             require(observableType is ParameterizedType) { "resource must be parameterized" }

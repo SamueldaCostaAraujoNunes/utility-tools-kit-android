@@ -1,7 +1,7 @@
 package com.samuelnunes.utility_tool_kit.network.LiveDataAdapter
 
 import androidx.lifecycle.LiveData
-import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.parseError
 import retrofit2.Call
 import retrofit2.CallAdapter
@@ -50,14 +50,14 @@ class LiveDataBodyCallAdapter<R>(
 class LiveDataResultCallAdapter<R>(
     private val responseType: Type,
     private val annotations: Array<out Annotation>
-) : CallAdapter<R, LiveData<Result<R>>> {
+) : CallAdapter<R, LiveData<Resource<R>>> {
 
     override fun responseType(): Type {
         return responseType
     }
 
-    override fun adapt(call: Call<R>): LiveData<Result<R>> {
-        return object : LiveData<Result<R>>(Result.Loading()) {
+    override fun adapt(call: Call<R>): LiveData<Resource<R>> {
+        return object : LiveData<Resource<R>>(Resource.Loading()) {
             var started = AtomicBoolean(false)
 
             override fun onActive() {
@@ -69,10 +69,10 @@ class LiveDataResultCallAdapter<R>(
                             if (response.isSuccessful) {
                                 val body = response.body()
                                 if (body == null || statusCode == 204) {
-                                    postValue(Result.Empty())
+                                    postValue(Resource.Empty())
                                 } else {
                                     postValue(
-                                        Result.Success(
+                                        Resource.Success(
                                             data = body,
                                             statusCode = statusCode
                                         )
@@ -84,7 +84,7 @@ class LiveDataResultCallAdapter<R>(
                                     responseBody = response.errorBody(),
                                     annotations = annotations
                                 )
-                                Result.Error<R>(
+                                Resource.Error<R>(
                                     message = response.message(),
                                     statusCode = statusCode,
                                     errorResponse = errorResponse
@@ -93,7 +93,7 @@ class LiveDataResultCallAdapter<R>(
                         }
 
                         override fun onFailure(call: Call<R>, throwable: Throwable) {
-                            postValue(Result.Error(throwable))
+                            postValue(Resource.Error(throwable))
                         }
                     })
                 }

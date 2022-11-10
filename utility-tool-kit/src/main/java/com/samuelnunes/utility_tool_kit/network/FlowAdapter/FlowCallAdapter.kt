@@ -1,6 +1,6 @@
 package com.samuelnunes.utility_tool_kit.network.FlowAdapter
 
-import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.parseError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -16,10 +16,10 @@ import kotlin.coroutines.resumeWithException
 class FlowResultCallAdapter<R>(
     private val responseType: Type,
     private val annotations: Array<out Annotation>
-) : CallAdapter<R, Flow<Result<R>>> {
-    override fun adapt(call: Call<R>): Flow<Result<R>> {
+) : CallAdapter<R, Flow<Resource<R>>> {
+    override fun adapt(call: Call<R>): Flow<Resource<R>> {
         return flow {
-            emit(Result.Loading())
+            emit(Resource.Loading())
             emit(
                 suspendCancellableCoroutine { continuation ->
                     call.clone().enqueue(object : Callback<R> {
@@ -30,9 +30,9 @@ class FlowResultCallAdapter<R>(
                                 if (response.isSuccessful) {
                                     val body = response.body()
                                     if (body == null || statusCode == 204) {
-                                        Result.Empty()
+                                        Resource.Empty()
                                     } else {
-                                        Result.Success(
+                                        Resource.Success(
                                             data = body,
                                             statusCode = statusCode
                                         )
@@ -43,7 +43,7 @@ class FlowResultCallAdapter<R>(
                                         responseBody = response.errorBody(),
                                         annotations = annotations
                                     )
-                                    Result.Error(
+                                    Resource.Error(
                                         message = response.message(),
                                         statusCode = statusCode,
                                         errorResponse = errorResponse
@@ -53,7 +53,7 @@ class FlowResultCallAdapter<R>(
                         }
 
                         override fun onFailure(call: Call<R>, throwable: Throwable) {
-                            continuation.resume(Result.Error(throwable))
+                            continuation.resume(Resource.Error(throwable))
                         }
                     })
                     continuation.invokeOnCancellation { call.cancel() }

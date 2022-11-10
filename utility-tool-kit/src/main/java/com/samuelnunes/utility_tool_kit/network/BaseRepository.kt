@@ -1,6 +1,6 @@
 package com.samuelnunes.utility_tool_kit.network
 
-import com.samuelnunes.utility_tool_kit.domain.Result
+import com.samuelnunes.utility_tool_kit.domain.Resource
 import kotlinx.coroutines.flow.*
 import retrofit2.Response
 
@@ -14,15 +14,15 @@ abstract class BaseRepository {
         crossinline saveFetchResult: suspend (RemoteType) -> Unit,
         crossinline onFetchFailed: (Throwable) -> Unit = { },
         crossinline shouldUpdate: (LocalType?) -> Boolean = { true }
-    ): Flow<Result<LocalType>> = flow {
-        emit(Result.Loading())
+    ): Flow<Resource<LocalType>> = flow {
+        emit(Resource.Loading())
         val resultFlow = query()
 
         val firstOrNull = resultFlow.firstOrNull()
 
         if (firstOrNull != null) {
             resultFlow.map {
-                Result.Success(
+                Resource.Success(
                     data = it
                 )
             }
@@ -37,12 +37,12 @@ abstract class BaseRepository {
 
                     if (body == null || statusCode == 204) {
                         resultFlow.map {
-                            Result.Empty()
+                            Resource.Empty()
                         }
                     } else {
                         saveFetchResult(body)
                         resultFlow.map {
-                            Result.Success(
+                            Resource.Success(
                                 data = it,
                                 statusCode = statusCode
                             )
@@ -50,7 +50,7 @@ abstract class BaseRepository {
                     }
                 } else {
                     resultFlow.map {
-                        Result.Error(
+                        Resource.Error(
                             message = response.message(),
                             dataInCache = it,
                             statusCode = statusCode
@@ -60,7 +60,7 @@ abstract class BaseRepository {
             } catch (throwable: Throwable) {
                 onFetchFailed(throwable)
                 resultFlow.map {
-                    Result.Error(
+                    Resource.Error(
                         dataInCache = it,
                         throwable = throwable
                     )
