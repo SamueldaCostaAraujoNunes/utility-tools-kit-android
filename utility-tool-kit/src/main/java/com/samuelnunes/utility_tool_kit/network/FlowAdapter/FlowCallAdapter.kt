@@ -1,6 +1,7 @@
 package com.samuelnunes.utility_tool_kit.network.FlowAdapter
 
 import com.samuelnunes.utility_tool_kit.domain.Resource
+import com.samuelnunes.utility_tool_kit.network.naturalAdapter.ResourceCall
 import com.samuelnunes.utility_tool_kit.network.parseError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,46 +18,22 @@ class FlowResultCallAdapter<R>(
     private val responseType: Type,
     private val annotations: Array<out Annotation>
 ) : CallAdapter<R, Flow<Resource<R>>> {
-    override fun adapt(call: Call<R>): Flow<Resource<R>> {
+    override fun adapt(delegate: Call<R>): Flow<Resource<R>> {
         return flow {
             emit(Resource.Loading())
             emit(
                 suspendCancellableCoroutine { continuation ->
-                    call.clone().enqueue(object : Callback<R> {
-
-                        override fun onResponse(call: Call<R>, response: Response<R>) {
-                            val statusCode = response.code()
-                            continuation.resume(
-                                if (response.isSuccessful) {
-                                    val body = response.body()
-                                    if (body == null || statusCode == 204) {
-                                        Resource.Empty()
-                                    } else {
-                                        Resource.Success(
-                                            data = body,
-                                            statusCode = statusCode
-                                        )
-                                    }
-                                } else {
-                                    val errorResponse = parseError(
-                                        statusCode = statusCode,
-                                        responseBody = response.errorBody(),
-                                        annotations = annotations
-                                    )
-                                    Resource.Error(
-                                        message = response.message(),
-                                        statusCode = statusCode,
-                                        errorResponse = errorResponse
-                                    )
-                                }
-                            )
+                    ResourceCall(delegate, annotations).enqueue(object : Callback<Resource<R>> {
+                        override fun onResponse(
+                            call: Call<Resource<R>>,
+                            response: Response<Resource<R>>
+                        ) {
+                            continuation.resume(response.body()!!)
                         }
+                        override fun onFailure(call: Call<Resource<R>>, t: Throwable) {}
 
-                        override fun onFailure(call: Call<R>, throwable: Throwable) {
-                            continuation.resume(Resource.Error(throwable))
-                        }
                     })
-                    continuation.invokeOnCancellation { call.cancel() }
+                    continuation.invokeOnCancellation { delegate.cancel() }
                 }
             )
         }

@@ -13,11 +13,11 @@ class GetCatsGifsUseCase @Inject constructor(
 
     operator fun invoke(): Flow<Resource<List<Breed.Image>>> {
         return repository.getCatsGifs().map {
-            it.map { imageList ->
+            it.map(mapperSuccess = { imageList ->
                 imageList?.map { dto ->
                     dto.toImage()
                 }
-            }
+            })
         }
     }
 

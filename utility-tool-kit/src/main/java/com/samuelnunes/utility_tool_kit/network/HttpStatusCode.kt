@@ -1,6 +1,7 @@
-package com.samuelnunes.utility_tool_kit.domain
+package com.samuelnunes.utility_tool_kit.network
 
-enum class HttpStatusCodeError(val statusCode: Int) {
+
+enum class HttpStatusCode(val statusCode: Int) {
     CONTINUE(100),
     SWITCHING_PROTOCOLS(101),
     PROCESSING(102),
@@ -53,7 +54,7 @@ enum class HttpStatusCodeError(val statusCode: Int) {
     TOO_MANY_REQUESTS(429),
     REQUEST_HEADER_FIELDS_TOO_LARGE(431),
     UNAVAILABLE_FOR_LEGAL_REASONS(451),
-    INTERNAL_SERVER_ERROR(500),
+    INTERNAL_SERVER_(500),
     NOT_IMPLEMENTED(501),
     BAD_GATEWAY(502),
     SERVICE_UNAVAILABLE(503),
@@ -63,5 +64,24 @@ enum class HttpStatusCodeError(val statusCode: Int) {
     INSUFFICIENT_STORAGE(507),
     LOOP_DETECTED(508),
     NOT_EXTENDED(510),
-    NETWORK_AUTHENTICATION_REQUIRED(511)
+    NETWORK_AUTHENTICATION_REQUIRED(511);
+
+    companion object {
+
+        fun inStatus(code: Int, vararg codes: HttpStatusCode): Boolean = codes.any { it.statusCode == code }
+
+        fun isInformational(code: Int): Boolean = code in 100..199
+
+        fun isSuccess(code: Int): Boolean = code in 200..299
+
+        fun isRedirection(code: Int): Boolean = code in 300..399
+
+        fun isError(code: Int): Boolean = isClientError(code) || isServerError(code)
+
+        fun isClientError(code: Int): Boolean = code in 400..499
+
+        fun isServerError(code: Int): Boolean = code in 500..599
+
+    }
+    fun enumByStatusCode(statusCode: Int) = values().find { it.statusCode == statusCode }
 }

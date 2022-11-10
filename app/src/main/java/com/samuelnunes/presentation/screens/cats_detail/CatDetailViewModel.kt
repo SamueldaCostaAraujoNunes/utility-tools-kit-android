@@ -54,7 +54,7 @@ class CatDetailViewModel @Inject constructor(
     }
 
     private fun handleError(resource: Resource.Error<*>) {
-        val errorResponse = resource.errorResponse
+        val errorResponse = resource.errorData
         _error.value = if (errorResponse is NotFoundError) {
             UiText.DynamicString(errorResponse.message)
         } else {

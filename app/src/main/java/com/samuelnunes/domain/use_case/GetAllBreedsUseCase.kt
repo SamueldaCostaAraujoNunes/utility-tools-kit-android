@@ -12,11 +12,11 @@ class GetAllBreedsUseCase @Inject constructor(
 ) {
     operator fun invoke(isAsc: Boolean = true): Flow<Resource<List<Breed>>> {
         return repository.getAllBreeds(isAsc).map { res ->
-            res.map { content ->
+            res.map(mapperSuccess = { content ->
                 content?.map {
                     it.toBreed()
                 }
-            }
+            })
         }
     }
 

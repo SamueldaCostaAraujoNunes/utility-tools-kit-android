@@ -5,9 +5,9 @@ import com.samuelnunes.data.dto.request.query.SizeImages
 import com.samuelnunes.data.dto.request.query.TypeImages
 import com.samuelnunes.data.dto.response.BreedDTO
 import com.samuelnunes.data.dto.response.error.NotFoundError
-import com.samuelnunes.utility_tool_kit.domain.HttpStatusCodeError.NOT_FOUND
 import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.ErrorType
+import com.samuelnunes.utility_tool_kit.network.HttpStatusCode.NOT_FOUND
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.GET
@@ -22,7 +22,7 @@ interface TheCatApi {
     ): Response<List<BreedDTO>>
 
     @GET("images/search")
-    @ErrorType(NOT_FOUND, NotFoundError::class)
+    @ErrorType(NotFoundError::class, NOT_FOUND)
     fun getRandomImage(
         @Query("size") size: SizeImages? = null,
         @Query("mime_types") mimeTypes: TypeImages? = null,

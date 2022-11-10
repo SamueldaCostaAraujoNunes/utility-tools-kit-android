@@ -25,35 +25,32 @@ sealed class Resource<out T> {
         val exception: Exception,
         val dataInCache: T? = null,
         val statusCode: Int? = null,
-        val errorResponse: ErrorResponse? = null
+        val errorData: Any? = null
     ) : Resource<T>() {
-
-        abstract class ErrorResponse {}
 
         constructor(
             throwable: Throwable,
             dataInCache: T? = null,
-            errorResponse: ErrorResponse? = null
+            errorData: Any? = null
         ) : this(
             exception = Exception(throwable),
             dataInCache = dataInCache,
-            errorResponse = errorResponse
+            errorData = errorData
         )
 
         constructor(
             message: String? = null,
             dataInCache: T? = null,
             statusCode: Int? = null,
-            errorResponse: ErrorResponse? = null
+            errorData: Any? = null
         ) : this(
             exception = Exception(message),
             dataInCache = dataInCache,
             statusCode = statusCode,
-            errorResponse = errorResponse
+            errorData = errorData
         )
-
         init {
-            Timber.e(exception)
+            Timber.d(toString())
         }
     }
 
@@ -62,16 +59,16 @@ sealed class Resource<out T> {
             is Loading -> "Loading..."
             is Empty -> "Empty"
             is Success -> "Success[data=$data, statusCode=$statusCode]"
-            is Error -> "Error[exception=$exception, dataInCache=$dataInCache, statusCode=$statusCode, errorResponse=$errorResponse]"
+            is Error<T> -> "Error[exception=$exception, dataInCache=$dataInCache, statusCode=$statusCode, errorResponse=$errorData]"
         }
     }
 
-    fun <D> map(mapper: (T?) -> D?): Resource<D> {
+    fun <D> map(mapperSuccess: (T?) -> D?, mapperError: (Any?) -> Any? = { it }): Resource<D> {
         return when (this) {
             is Loading -> Loading()
             is Empty -> Empty()
-            is Success -> Success(mapper(data)!!, statusCode)
-            is Error -> Error(exception, mapper(dataInCache), statusCode, errorResponse)
+            is Success -> Success(mapperSuccess(data)!!, statusCode)
+            is Error -> Error(exception, mapperSuccess(dataInCache), statusCode, mapperError(errorData))
         }
     }
 }

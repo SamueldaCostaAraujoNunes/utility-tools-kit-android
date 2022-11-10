@@ -2,7 +2,7 @@ package com.samuelnunes.utility_tool_kit.network.LiveDataAdapter
 
 import androidx.lifecycle.LiveData
 import com.samuelnunes.utility_tool_kit.domain.Resource
-import com.samuelnunes.utility_tool_kit.network.parseError
+import com.samuelnunes.utility_tool_kit.network.naturalAdapter.ResourceCall
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Callback
@@ -56,45 +56,23 @@ class LiveDataResultCallAdapter<R>(
         return responseType
     }
 
-    override fun adapt(call: Call<R>): LiveData<Resource<R>> {
+    override fun adapt(delegate: Call<R>): LiveData<Resource<R>> {
         return object : LiveData<Resource<R>>(Resource.Loading()) {
             var started = AtomicBoolean(false)
 
             override fun onActive() {
                 super.onActive()
                 if (started.compareAndSet(false, true)) {
-                    call.clone().enqueue(object : Callback<R> {
-                        override fun onResponse(call: Call<R>, response: Response<R>) {
-                            val statusCode = response.code()
-                            if (response.isSuccessful) {
-                                val body = response.body()
-                                if (body == null || statusCode == 204) {
-                                    postValue(Resource.Empty())
-                                } else {
-                                    postValue(
-                                        Resource.Success(
-                                            data = body,
-                                            statusCode = statusCode
-                                        )
-                                    )
-                                }
-                            } else {
-                                val errorResponse = parseError(
-                                    statusCode = statusCode,
-                                    responseBody = response.errorBody(),
-                                    annotations = annotations
-                                )
-                                Resource.Error<R>(
-                                    message = response.message(),
-                                    statusCode = statusCode,
-                                    errorResponse = errorResponse
-                                )
-                            }
+                    ResourceCall(delegate, annotations).enqueue(object : Callback<Resource<R>> {
+                        override fun onResponse(
+                            call: Call<Resource<R>>,
+                            response: Response<Resource<R>>
+                        ) {
+                            postValue(response.body())
                         }
 
-                        override fun onFailure(call: Call<R>, throwable: Throwable) {
-                            postValue(Resource.Error(throwable))
-                        }
+                        override fun onFailure(call: Call<Resource<R>>, t: Throwable) {}
+
                     })
                 }
             }
