@@ -15,6 +15,7 @@ import com.samuelnunes.utility_tool_kit.network.EnumConverter.EnumConverterFacto
 import com.samuelnunes.utility_tool_kit.network.FlowAdapter.FlowCallAdapterFactory
 import com.samuelnunes.utility_tool_kit.network.LiveDataAdapter.LiveDataCallAdapterFactory
 import com.samuelnunes.utility_tool_kit.network.NetworkConnectivityObserver
+import com.samuelnunes.utility_tool_kit.network.naturalAdapter.ResourceCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,6 +37,7 @@ object NetworkModule {
     @Singleton
     @Provides
     fun providerRetrofitBuilder(gson: Gson): Retrofit.Builder = Retrofit.Builder()
+        .addCallAdapterFactory(ResourceCallAdapterFactory.create())
         .addCallAdapterFactory(LiveDataCallAdapterFactory.create())
         .addCallAdapterFactory(FlowCallAdapterFactory.create())
         .addConverterFactory(EnumConverterFactory.create())

@@ -5,6 +5,7 @@ import com.samuelnunes.data.dto.response.BreedDTO
 import com.samuelnunes.data.local.dao.CatsDao
 import com.samuelnunes.data.remote.api.TheCatApi
 import com.samuelnunes.domain.repository.ICatsRepository
+import com.samuelnunes.utility_tool_kit.database.dao.insertOrUpdate
 import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.BaseRepository
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +22,7 @@ class CatsRepository @Inject constructor(
     override fun getAllBreeds(isAsc: Boolean): Flow<Resource<List<BreedDTO>>> = networkBoundResource(
         if (isAsc) dao::getAllAsc else dao::getAllDesc,
         api::getAllBreeds,
-        dao::insertAll
+        dao::insertOrUpdate
     )
 
     override fun getCatsGifs(): Flow<Resource<List<BreedDTO.ImageDTO>>> =

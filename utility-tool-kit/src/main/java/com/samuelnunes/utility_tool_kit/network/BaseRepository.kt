@@ -7,67 +7,39 @@ import retrofit2.Response
 
 abstract class BaseRepository {
 
-
     inline fun <LocalType, RemoteType> networkBoundResource(
         crossinline query: () -> Flow<LocalType>,
-        crossinline fetch: suspend () -> Response<RemoteType>,
+        crossinline fetch: suspend () -> Resource<RemoteType>,
         crossinline saveFetchResult: suspend (RemoteType) -> Unit,
         crossinline onFetchFailed: (Throwable) -> Unit = { },
         crossinline shouldUpdate: (LocalType?) -> Boolean = { true }
     ): Flow<Resource<LocalType>> = flow {
         emit(Resource.Loading())
-        val resultFlow = query()
+        val localFlow = query()
 
-        val firstOrNull = resultFlow.firstOrNull()
-
-        if (firstOrNull != null) {
-            resultFlow.map {
-                Resource.Success(
-                    data = it
-                )
-            }
-        }
+        val firstOrNull = localFlow.firstOrNull()
 
         if (shouldUpdate(firstOrNull)) {
-            val remoteFlow = try {
-                val response = fetch()
-                val statusCode = response.code()
-                if (response.isSuccessful) {
-                    val body = response.body()
-
-                    if (body == null || statusCode == 204) {
-                        resultFlow.map {
-                            Resource.Empty()
-                        }
-                    } else {
-                        saveFetchResult(body)
-                        resultFlow.map {
-                            Resource.Success(
-                                data = it,
-                                statusCode = statusCode
-                            )
-                        }
-                    }
-                } else {
-                    resultFlow.map {
-                        Resource.Error(
-                            message = response.message(),
-                            dataInCache = it,
-                            statusCode = statusCode
-                        )
-                    }
-                }
-            } catch (throwable: Throwable) {
-                onFetchFailed(throwable)
-                resultFlow.map {
-                    Resource.Error(
-                        dataInCache = it,
-                        throwable = throwable
-                    )
-                }
+            if (firstOrNull != null) {
+                emit(Resource.Success(data = firstOrNull))
             }
-            emitAll(remoteFlow)
+            when (val resultFetch = fetch()) {
+                is Resource.Success<RemoteType> -> {
+                    saveFetchResult(resultFetch.data)
+                }
+                is Resource.Error -> {
+                    onFetchFailed(resultFetch.exception)
+                    emit(resultFetch.map())
+                }
+                else -> {}
+            }
+            if(localFlow.firstOrNull() == null) {
+                emit(Resource.Empty())
+            }
         }
+        emitAll(localFlow.map {
+            Resource.Success(data = it)
+        })
     }
 
 }

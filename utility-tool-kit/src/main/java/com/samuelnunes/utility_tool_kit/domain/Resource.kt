@@ -65,7 +65,7 @@ sealed class Resource<out T> {
         }
     }
 
-    fun <D> map(mapperSuccess: (T?) -> D?, mapperError: (Serializable?) -> Serializable? = { it }): Resource<D> {
+    fun <D> map(mapperSuccess: (T?) -> D? = { null }, mapperError: (Serializable?) -> Serializable? = { it }): Resource<D> {
         return when (this) {
             is Loading -> Loading()
             is Empty -> Empty()

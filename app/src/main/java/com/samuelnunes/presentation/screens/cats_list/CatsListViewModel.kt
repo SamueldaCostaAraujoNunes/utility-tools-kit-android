@@ -11,6 +11,7 @@ import com.samuelnunes.utility_tool_kit.network.NetworkConnectivityObserver
 import com.samuelnunes.utility_tool_kit.utils.UiText
 import com.samuelnunes.utils.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

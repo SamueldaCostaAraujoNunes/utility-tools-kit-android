@@ -16,10 +16,11 @@ import retrofit2.http.Query
 interface TheCatApi {
 
     @GET("breeds")
+    @ErrorType(NotFoundError::class, NOT_FOUND)
     suspend fun getAllBreeds(
-        @Query("limit") limit: Int? = 10,
-        @Query("page") page: Int? = 0
-    ): Response<List<BreedDTO>>
+        @Query("limit") limit: Int? = null,
+        @Query("page") page: Int? = null
+    ): Resource<List<BreedDTO>>
 
     @GET("images/search")
     @ErrorType(NotFoundError::class, NOT_FOUND)
