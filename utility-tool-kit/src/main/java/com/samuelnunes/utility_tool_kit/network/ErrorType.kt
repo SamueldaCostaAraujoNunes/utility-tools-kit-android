@@ -2,6 +2,7 @@ package com.samuelnunes.utility_tool_kit.network
 
 import com.google.gson.Gson
 import okhttp3.ResponseBody
+import timber.log.Timber
 import java.io.Serializable
 import kotlin.reflect.KClass
 
@@ -15,19 +16,23 @@ annotation class ErrorType(
 )
 
 fun parseError(
-    statusCode: Int,
+    statusCode: HttpStatusCode,
     responseBody: ResponseBody?,
     annotations: Array<out Annotation>
 ): Serializable? {
-    val errorBody = responseBody?.charStream()?.readText() ?: return null
+    return try {
+        val errorBody = responseBody?.charStream()?.readText() ?: return null
 
-    val errorType: ErrorType = annotations.find {
-        it is ErrorType && (HttpStatusCode.inStatus(
-            statusCode,
-            *it.httpStatusCodeError
-        ) || it.httpStatusCodeError.isEmpty())
-    } as? ErrorType ?: return null
+        val errorsTypeAnnotation = annotations.filterIsInstance<ErrorType>()
 
-    return Gson().fromJson(errorBody, errorType.kClass.java)
+        val errorType: ErrorType =
+            errorsTypeAnnotation.find { annotation -> annotation.httpStatusCodeError.any { it == statusCode } } ?:
+            errorsTypeAnnotation.find { annotation -> annotation.httpStatusCodeError.isEmpty() } ?:
+            return null
 
+        Gson().fromJson(errorBody, errorType.kClass.java)
+    }catch (e: Exception) {
+        Timber.e(e, "Não foi possivel mapear o objeto de erro")
+        null
+    }
 }

@@ -67,22 +67,19 @@ enum class HttpStatusCode(val statusCode: Int) {
     NETWORK_AUTHENTICATION_REQUIRED(511),
     UNKNOWN(0);
 
+    fun isInformational(): Boolean = statusCode in 100..199
+
+    fun isSuccess(): Boolean = statusCode in 200..299
+
+    fun isRedirection(): Boolean = statusCode in 300..399
+
+    fun isError(): Boolean = isClientError() || isServerError()
+
+    fun isClientError(): Boolean = statusCode in 400..499
+
+    fun isServerError(): Boolean = statusCode in 500..599
+
     companion object {
-
-        fun inStatus(code: Int, vararg codes: HttpStatusCode): Boolean = codes.any { it.statusCode == code }
-
-        fun isInformational(code: Int): Boolean = code in 100..199
-
-        fun isSuccess(code: Int): Boolean = code in 200..299
-
-        fun isRedirection(code: Int): Boolean = code in 300..399
-
-        fun isError(code: Int): Boolean = isClientError(code) || isServerError(code)
-
-        fun isClientError(code: Int): Boolean = code in 400..499
-
-        fun isServerError(code: Int): Boolean = code in 500..599
-
         fun enumByStatusCode(statusCode: Int) = values().find { it.statusCode == statusCode } ?: UNKNOWN
     }
 }

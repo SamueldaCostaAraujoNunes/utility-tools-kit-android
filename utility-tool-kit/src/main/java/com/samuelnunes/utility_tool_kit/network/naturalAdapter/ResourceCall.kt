@@ -30,27 +30,27 @@ class ResourceCall<T>(private val delegate: Call<T>, val annotations: Array<out 
     private fun successReponse(
         response: Response<T>
     ): Response<Resource<T>> {
-        val statusCode = response.code()
+        val httpStatusCode = HttpStatusCode.enumByStatusCode(response.code())
         return Response.success(
-            if (response.isSuccessful) {
+            if (httpStatusCode.isSuccess()) {
                 val body = response.body()
-                if (body == null || statusCode == 204) {
+                if (body == null || httpStatusCode == HttpStatusCode.NO_CONTENT) {
                     Resource.Empty()
                 } else {
                     Resource.Success(
                         data = body,
-                        statusCode = HttpStatusCode.enumByStatusCode(statusCode)
+                        statusCode = httpStatusCode
                     )
                 }
             } else {
                 val errorResponse = parseError(
-                    statusCode = statusCode,
+                    statusCode = httpStatusCode,
                     responseBody = response.errorBody(),
                     annotations = annotations
                 )
                 Resource.Error(
                     message = response.message(),
-                    statusCode = HttpStatusCode.enumByStatusCode(statusCode),
+                    statusCode = httpStatusCode,
                     errorData = errorResponse
                 )
             }
