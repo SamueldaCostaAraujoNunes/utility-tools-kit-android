@@ -20,25 +20,22 @@ abstract class BaseRepository {
         val firstOrNull = localFlow.firstOrNull()
 
         if (shouldUpdate(firstOrNull)) {
-            if (firstOrNull != null) {
-                emit(Resource.Success(data = firstOrNull))
+            Resource.emptyOrSuccess(data = firstOrNull).also {
+                if (it is Resource.Success) {
+                    emit(it)
+                }
             }
             when (val resultFetch = fetch()) {
-                is Resource.Success<RemoteType> -> {
-                    saveFetchResult(resultFetch.data)
-                }
+                is Resource.Success<RemoteType> -> saveFetchResult(resultFetch.data)
                 is Resource.Error -> {
                     onFetchFailed(resultFetch.exception)
                     emit(resultFetch.map())
                 }
                 else -> {}
             }
-            if(localFlow.firstOrNull() == null) {
-                emit(Resource.Empty())
-            }
         }
         emitAll(localFlow.map {
-            Resource.Success(data = it)
+            Resource.emptyOrSuccess(data = it)
         })
     }
 

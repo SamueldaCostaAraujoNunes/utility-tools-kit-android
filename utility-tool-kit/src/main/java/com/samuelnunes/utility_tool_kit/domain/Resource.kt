@@ -5,7 +5,16 @@ import timber.log.Timber
 import java.io.Serializable
 
 
-sealed class Resource<out T> {
+sealed class Resource<out T> : Serializable {
+
+    companion object {
+        fun <T> emptyOrSuccess(data: T?, statusCode: HttpStatusCode = HttpStatusCode.OK): Resource<T> =
+            if (data == null || (data is Collection<*> && data.isEmpty()) || statusCode == HttpStatusCode.NO_CONTENT) {
+                Empty()
+            } else {
+                Success(data, statusCode)
+            }
+    }
 
     init {
         Timber.tag("Result")
@@ -51,6 +60,7 @@ sealed class Resource<out T> {
             statusCode = statusCode,
             errorData = errorData
         )
+
         init {
             Timber.d(toString())
         }
@@ -65,12 +75,20 @@ sealed class Resource<out T> {
         }
     }
 
-    fun <D> map(mapperSuccess: (T?) -> D? = { null }, mapperError: (Serializable?) -> Serializable? = { it }): Resource<D> {
+    fun <D> map(
+        mapperSuccess: (T?) -> D? = { null },
+        mapperError: (Serializable?) -> Serializable? = { it }
+    ): Resource<D> {
         return when (this) {
             is Loading -> Loading()
             is Empty -> Empty()
             is Success -> Success(mapperSuccess(data)!!, statusCode)
-            is Error -> Error(exception, mapperSuccess(dataInCache), statusCode, mapperError(errorData))
+            is Error -> Error(
+                exception,
+                mapperSuccess(dataInCache),
+                statusCode,
+                mapperError(errorData)
+            )
         }
     }
 }

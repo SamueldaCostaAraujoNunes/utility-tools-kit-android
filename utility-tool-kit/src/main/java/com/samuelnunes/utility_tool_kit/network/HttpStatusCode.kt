@@ -1,7 +1,9 @@
 package com.samuelnunes.utility_tool_kit.network
 
+import java.io.Serializable
 
-enum class HttpStatusCode(val statusCode: Int) {
+
+enum class HttpStatusCode(val statusCode: Int): Serializable {
     CONTINUE(100),
     SWITCHING_PROTOCOLS(101),
     PROCESSING(102),

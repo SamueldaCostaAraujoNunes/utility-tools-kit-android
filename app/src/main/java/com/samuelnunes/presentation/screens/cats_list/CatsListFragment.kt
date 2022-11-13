@@ -43,7 +43,6 @@ class CatsListFragment : Fragment() {
         populateGifs()
         populateBreedList()
         networkState()
-        isShaking()
     }
 
     private fun errorNotify() {
@@ -53,8 +52,14 @@ class CatsListFragment : Fragment() {
         }
     }
 
-    private fun loadingState() =
-        viewModel.loading.observe(viewLifecycleOwner, binding.loading::visibleIf)
+    private fun loadingState() {
+        viewModel.loading.observe(viewLifecycleOwner, binding.swipeContainer::setRefreshing)
+        binding.swipeContainer.setOnRefreshListener {
+            viewModel.fetchNewGifs()
+            viewModel.fetchBreeds()
+        }
+    }
+
 
     private fun populateBreedList() =
         viewModel.breeds.observe(viewLifecycleOwner, breedListAdapter::submitList)
@@ -73,10 +78,4 @@ class CatsListFragment : Fragment() {
     }
 
     private fun fetchNewGifs(image: Breed.Image) = viewModel.fetchNewGifs()
-
-    private fun isShaking() = viewModel.isShaking.observe(viewLifecycleOwner) { isShaking ->
-        if(isShaking) {
-            Toast.makeText(requireContext(), "Shake baby", Toast.LENGTH_SHORT).show()
-        }
-    }
 }

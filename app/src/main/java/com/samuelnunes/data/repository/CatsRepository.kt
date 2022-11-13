@@ -17,7 +17,7 @@ class CatsRepository @Inject constructor(
     private val dao: CatsDao
 ) : BaseRepository(), ICatsRepository {
 
-    override fun getBreed(id: String): Flow<Resource<BreedDTO>> = dao.getBreed(id).map { Resource.Success(it) }
+    override fun getBreed(id: String): Flow<Resource<BreedDTO>> = dao.getBreed(id).map { Resource.emptyOrSuccess(it) }
 
     override fun getAllBreeds(isAsc: Boolean): Flow<Resource<List<BreedDTO>>> = networkBoundResource(
         if (isAsc) dao::getAllAsc else dao::getAllDesc,

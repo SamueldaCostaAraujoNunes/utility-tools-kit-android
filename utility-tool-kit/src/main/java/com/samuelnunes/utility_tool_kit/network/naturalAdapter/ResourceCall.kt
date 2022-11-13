@@ -16,7 +16,7 @@ class ResourceCall<T>(private val delegate: Call<T>, val annotations: Array<out 
         delegate.enqueue(object : Callback<T> {
 
             override fun onResponse(call: Call<T>, response: Response<T>) =
-                callback.onResponse(this@ResourceCall, successReponse(response))
+                callback.onResponse(this@ResourceCall, successResponse(response))
 
             override fun onFailure(call: Call<T>, t: Throwable) =
                 callback.onResponse(this@ResourceCall, failureResponse(t))
@@ -27,21 +27,14 @@ class ResourceCall<T>(private val delegate: Call<T>, val annotations: Array<out 
     private fun failureResponse(t: Throwable): Response<Resource<T>> =
         Response.success(Resource.Error(t))
 
-    private fun successReponse(
+    private fun successResponse(
         response: Response<T>
     ): Response<Resource<T>> {
         val httpStatusCode = HttpStatusCode.enumByStatusCode(response.code())
         return Response.success(
             if (httpStatusCode.isSuccess()) {
                 val body = response.body()
-                if (body == null || httpStatusCode == HttpStatusCode.NO_CONTENT) {
-                    Resource.Empty()
-                } else {
-                    Resource.Success(
-                        data = body,
-                        statusCode = httpStatusCode
-                    )
-                }
+                Resource.emptyOrSuccess(body, httpStatusCode)
             } else {
                 val errorResponse = parseError(
                     statusCode = httpStatusCode,
@@ -59,7 +52,7 @@ class ResourceCall<T>(private val delegate: Call<T>, val annotations: Array<out 
 
     override fun execute(): Response<Resource<T>> = try {
         val response = delegate.execute()
-        successReponse(response)
+        successResponse(response)
     } catch (t: Throwable) {
         failureResponse(t)
     }

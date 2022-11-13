@@ -5,13 +5,13 @@ import com.samuelnunes.data.dto.response.error.NotFoundError
 import com.samuelnunes.domain.entity.Breed
 import com.samuelnunes.domain.use_case.GetAllBreedsUseCase
 import com.samuelnunes.domain.use_case.GetCatsGifsUseCase
-import com.samuelnunes.domain.use_case.ShakeDeviceUseCase
 import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.NetworkConnectivityObserver
 import com.samuelnunes.utility_tool_kit.utils.UiText
 import com.samuelnunes.utils.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,7 +19,6 @@ import javax.inject.Inject
 class CatsListViewModel @Inject constructor(
     private var getAllBreedsUseCase: GetAllBreedsUseCase,
     private var getCatsGifsUseCase: GetCatsGifsUseCase,
-    private var shakeDeviceUseCase: ShakeDeviceUseCase,
     private var networkConnectivityObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
@@ -39,8 +38,6 @@ class CatsListViewModel @Inject constructor(
         get() = _breeds
     val networkConnectivity: LiveData<Boolean>
         get() = _networkConnectivity
-    val isShaking: LiveData<Boolean>
-        get() = shakeDeviceUseCase().asLiveData()
 
     init {
         viewModelScope.launch {
@@ -55,14 +52,22 @@ class CatsListViewModel @Inject constructor(
         fetchBreeds()
     }
 
+    private suspend fun <T : Resource<*>> Flow<T>.collectLoading(collector: FlowCollector<T>) = collect { value ->
+        if (value is Resource.Loading<*>) {
+            _loading.value = _loading.value?.plus(1)
+        } else {
+            _loading.value = _loading.value?.minus(1)
+        }
+        collector.emit(value)
+    }
 
-    private fun fetchBreeds() {
+    fun fetchBreeds() {
         viewModelScope.launch {
-            getAllBreedsUseCase().collect { result ->
-                hasLoading(result)
+            getAllBreedsUseCase().collectLoading { result ->
                 when (result) {
                     is Resource.Success -> _breeds.value = result.data
                     is Resource.Error -> handleError(result, "Gatos")
+                    is Resource.Empty -> {}
                     else -> {}
                 }
             }
@@ -71,10 +76,9 @@ class CatsListViewModel @Inject constructor(
 
     fun fetchNewGifs() {
         viewModelScope.launch {
-            getCatsGifsUseCase().collect { result ->
-                hasLoading(result)
+            getCatsGifsUseCase().collectLoading { result ->
                 when (result) {
-                    is Resource.Success ->  _gifs.value = result.data
+                    is Resource.Success -> _gifs.value = result.data
                     is Resource.Error -> handleError(result, "Gifs")
                     else -> {}
                 }
@@ -88,14 +92,6 @@ class CatsListViewModel @Inject constructor(
             UiText.DynamicString(errorResponse.message)
         } else {
             UiText.StringResource(R.string.error_in_fetch_cats, source)
-        }
-    }
-
-    private fun hasLoading(resource: Resource<*>) {
-        if (resource is Resource.Loading) {
-            _loading.value = _loading.value?.plus(1)
-        } else {
-            _loading.value = _loading.value?.minus(1)
         }
     }
 }
