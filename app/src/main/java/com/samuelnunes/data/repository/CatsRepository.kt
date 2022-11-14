@@ -10,6 +10,7 @@ import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.BaseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 
 class CatsRepository @Inject constructor(
@@ -17,13 +18,21 @@ class CatsRepository @Inject constructor(
     private val dao: CatsDao
 ) : BaseRepository(), ICatsRepository {
 
-    override fun getBreed(id: String): Flow<Resource<BreedDTO>> = dao.getBreed(id).map { Resource.emptyOrSuccess(it) }
+    override fun getBreed(id: String): Flow<Resource<BreedDTO>> =
+        networkBoundResource(
+            { dao.getBreed(id) },
+            { api.getBreed(id) },
+            dao::insertOrUpdate,
+            { it }
+        )
 
-    override fun getAllBreeds(isAsc: Boolean): Flow<Resource<List<BreedDTO>>> = networkBoundResource(
-        if (isAsc) dao::getAllAsc else dao::getAllDesc,
-        api::getAllBreeds,
-        dao::insertOrUpdate
-    )
+    override fun getAllBreeds(isAsc: Boolean): Flow<Resource<List<BreedDTO>>> =
+        networkBoundResource(
+            if (isAsc) dao::getAllAsc else dao::getAllDesc,
+            api::getAllBreeds,
+            dao::insertOrUpdate,
+            { it }
+        )
 
     override fun getCatsGifs(): Flow<Resource<List<BreedDTO.ImageDTO>>> =
         api.getRandomImage(mimeTypes = TypeImages.GIF)

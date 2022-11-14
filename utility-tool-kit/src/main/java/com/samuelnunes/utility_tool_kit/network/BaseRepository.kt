@@ -10,7 +10,8 @@ abstract class BaseRepository {
     inline fun <LocalType, RemoteType> networkBoundResource(
         crossinline query: () -> Flow<LocalType>,
         crossinline fetch: suspend () -> Resource<RemoteType>,
-        crossinline saveFetchResult: suspend (RemoteType) -> Unit,
+        crossinline saveFetchResult: suspend (LocalType) -> Unit,
+        crossinline convertRemoteToLocal: (RemoteType) -> LocalType,
         crossinline onFetchFailed: (Throwable) -> Unit = { },
         crossinline shouldUpdate: (LocalType?) -> Boolean = { true }
     ): Flow<Resource<LocalType>> = flow {
@@ -26,10 +27,10 @@ abstract class BaseRepository {
                 }
             }
             when (val resultFetch = fetch()) {
-                is Resource.Success<RemoteType> -> saveFetchResult(resultFetch.data)
+                is Resource.Success<RemoteType> -> saveFetchResult(convertRemoteToLocal(resultFetch.data))
                 is Resource.Error -> {
                     onFetchFailed(resultFetch.exception)
-                    emit(resultFetch.map())
+                    emit(resultFetch.map { convertRemoteToLocal(it) })
                 }
                 else -> {}
             }

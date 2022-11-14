@@ -8,7 +8,10 @@ import java.io.Serializable
 sealed class Resource<out T> : Serializable {
 
     companion object {
-        fun <T> emptyOrSuccess(data: T?, statusCode: HttpStatusCode = HttpStatusCode.OK): Resource<T> =
+        fun <T> emptyOrSuccess(
+            data: T?,
+            statusCode: HttpStatusCode = HttpStatusCode.OK
+        ): Resource<T> =
             if (data == null || (data is Collection<*> && data.isEmpty()) || statusCode == HttpStatusCode.NO_CONTENT) {
                 Empty()
             } else {
@@ -21,15 +24,22 @@ sealed class Resource<out T> : Serializable {
     }
 
     class Loading<out T> : Resource<T>() {
-        init { Timber.d(toString()) }
+        init {
+            Timber.d(toString())
+        }
     }
 
     class Empty<out T> : Resource<T>() {
-        init { Timber.d(toString()) }
+        init {
+            Timber.d(toString())
+        }
     }
 
-    data class Success<out T>(val data: T, val statusCode: HttpStatusCode = HttpStatusCode.OK) : Resource<T>() {
-        init { Timber.d(toString()) }
+    data class Success<out T>(val data: T, val statusCode: HttpStatusCode = HttpStatusCode.OK) :
+        Resource<T>() {
+        init {
+            Timber.d(toString())
+        }
     }
 
     data class Error<out T>(
@@ -76,25 +86,23 @@ sealed class Resource<out T> : Serializable {
     }
 
     fun <D> map(
-        mapperSuccess: (T?) -> D? = { null },
-        mapperError: (Serializable?) -> Serializable? = { it }
+        mapperError: (Serializable?) -> Serializable? = { it },
+        mapperSuccess: ((T) -> D)
     ): Resource<D> {
+
         return when (this) {
             is Loading -> Loading()
             is Empty -> Empty()
-            is Success -> Success(mapperSuccess(data)!!, statusCode)
+            is Success -> Success(mapperSuccess(data))
             is Error -> Error(
                 exception,
-                mapperSuccess(dataInCache),
+                dataInCache?.let { mapperSuccess(it) },
                 statusCode,
-                mapperError(errorData)
+                errorData?.let { mapperError(it) }
             )
         }
     }
 }
-
-val Resource<*>.succeeded
-    get() = this is Resource.Success && data != null
 
 fun <T> Resource<T>.successOr(fallback: T): T {
     return (this as? Resource.Success<T>)?.data ?: fallback

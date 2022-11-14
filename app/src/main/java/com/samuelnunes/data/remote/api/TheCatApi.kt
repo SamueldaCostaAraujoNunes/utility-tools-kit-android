@@ -11,6 +11,7 @@ import com.samuelnunes.utility_tool_kit.network.HttpStatusCode.NOT_FOUND
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TheCatApi {
@@ -21,6 +22,12 @@ interface TheCatApi {
         @Query("limit") limit: Int? = null,
         @Query("page") page: Int? = null
     ): Resource<List<BreedDTO>>
+
+    @GET("breeds/{id}")
+    @ErrorType(NotFoundError::class, NOT_FOUND)
+    suspend fun getBreed(
+        @Path("id") limit: String
+    ): Resource<BreedDTO>
 
     @GET("images/search")
     @ErrorType(NotFoundError::class, NOT_FOUND)
