@@ -30,7 +30,7 @@ abstract class BaseRepository {
                 is Resource.Success<RemoteType> -> saveFetchResult(convertRemoteToLocal(resultFetch.data))
                 is Resource.Error -> {
                     onFetchFailed(resultFetch.exception)
-                    emit(resultFetch.map { convertRemoteToLocal(it) })
+                    emit(resultFetch.map())
                 }
                 else -> {}
             }

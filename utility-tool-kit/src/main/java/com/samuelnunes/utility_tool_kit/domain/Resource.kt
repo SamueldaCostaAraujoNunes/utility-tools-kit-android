@@ -27,12 +27,16 @@ sealed class Resource<out T> : Serializable {
         init {
             Timber.d(toString())
         }
+
+        fun <D> map() = Loading<D>()
     }
 
     class Empty<out T> : Resource<T>() {
         init {
             Timber.d(toString())
         }
+
+        fun <D> map() = Empty<D>()
     }
 
     data class Success<out T>(val data: T, val statusCode: HttpStatusCode = HttpStatusCode.OK) :
@@ -40,33 +44,30 @@ sealed class Resource<out T> : Serializable {
         init {
             Timber.d(toString())
         }
+
+        fun <D> map(mapper: (T) -> D) = Success(mapper(data), statusCode)
     }
 
     data class Error<out T>(
         val exception: Exception,
-        val dataInCache: T? = null,
         val statusCode: HttpStatusCode? = null,
         val errorData: Serializable? = null
     ) : Resource<T>() {
 
         constructor(
             throwable: Throwable,
-            dataInCache: T? = null,
             errorData: Serializable? = null
         ) : this(
             exception = Exception(throwable),
-            dataInCache = dataInCache,
             errorData = errorData
         )
 
         constructor(
             message: String? = null,
-            dataInCache: T? = null,
             statusCode: HttpStatusCode? = null,
             errorData: Serializable? = null
         ) : this(
             exception = Exception(message),
-            dataInCache = dataInCache,
             statusCode = statusCode,
             errorData = errorData
         )
@@ -74,6 +75,12 @@ sealed class Resource<out T> : Serializable {
         init {
             Timber.d(toString())
         }
+
+        fun <D> map(mapperError: (Serializable?) -> Serializable? = { it }) = Error<D>(
+            exception,
+            statusCode,
+            mapperError(errorData)
+        )
     }
 
     override fun toString(): String {
@@ -81,7 +88,7 @@ sealed class Resource<out T> : Serializable {
             is Loading -> "Loading..."
             is Empty -> "Empty"
             is Success -> "Success[data=$data, statusCode=$statusCode]"
-            is Error<T> -> "Error[exception=$exception, dataInCache=$dataInCache, statusCode=$statusCode, errorResponse=$errorData]"
+            is Error -> "Error[exception=$exception, statusCode=$statusCode, errorResponse=$errorData]"
         }
     }
 
@@ -89,17 +96,11 @@ sealed class Resource<out T> : Serializable {
         mapperError: (Serializable?) -> Serializable? = { it },
         mapperSuccess: ((T) -> D)
     ): Resource<D> {
-
         return when (this) {
-            is Loading -> Loading()
-            is Empty -> Empty()
-            is Success -> Success(mapperSuccess(data))
-            is Error -> Error(
-                exception,
-                dataInCache?.let { mapperSuccess(it) },
-                statusCode,
-                errorData?.let { mapperError(it) }
-            )
+            is Loading -> map()
+            is Empty -> map()
+            is Success -> map(mapperSuccess)
+            is Error -> map(mapperError)
         }
     }
 }
