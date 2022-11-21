@@ -11,7 +11,7 @@ abstract class UseCase<in P, R>(
         return try {
             withContext(coroutineDispatcher) {
                 execute(parameters).let {
-                    Resource.Success(it)
+                    Resource.emptyOrSuccess(it)
                 }
             }
         } catch (e: Exception) {

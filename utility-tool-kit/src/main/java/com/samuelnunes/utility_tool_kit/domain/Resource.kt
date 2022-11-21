@@ -24,26 +24,17 @@ sealed class Resource<out T> : Serializable {
     }
 
     class Loading<out T> : Resource<T>() {
-        init {
-            Timber.d(toString())
-        }
-
         fun <D> map() = Loading<D>()
     }
 
-    class Empty<out T> : Resource<T>() {
-        init {
-            Timber.d(toString())
-        }
-
+    class Empty<out T> internal constructor(): Resource<T>() {
         fun <D> map() = Empty<D>()
     }
 
-    data class Success<out T>(val data: T, val statusCode: HttpStatusCode = HttpStatusCode.OK) :
-        Resource<T>() {
-        init {
-            Timber.d(toString())
-        }
+    data class Success<out T> internal constructor(
+        val data: T,
+        val statusCode: HttpStatusCode
+    ) : Resource<T>() {
 
         fun <D> map(mapper: (T) -> D) = Success(mapper(data), statusCode)
     }
@@ -71,10 +62,6 @@ sealed class Resource<out T> : Serializable {
             statusCode = statusCode,
             errorData = errorData
         )
-
-        init {
-            Timber.d(toString())
-        }
 
         fun <D> map(mapperError: (Serializable?) -> Serializable? = { it }) = Error<D>(
             exception,
