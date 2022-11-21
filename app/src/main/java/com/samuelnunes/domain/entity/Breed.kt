@@ -1,5 +1,7 @@
 package com.samuelnunes.domain.entity
 
+import com.samuelnunes.data.dto.request.query.TypeImages
+
 data class Breed(
     val adaptability: Int,
     val affectionLevel: Int,
@@ -17,7 +19,7 @@ data class Breed(
     val healthIssues: Int,
     val hypoallergenic: Int,
     val id: String,
-    val image: Image,
+    val image: Image?,
     val indoor: Int,
     val intelligence: Int,
     val lap: Int,
@@ -26,7 +28,6 @@ data class Breed(
     val natural: Int,
     val origin: String,
     val rare: Int,
-    val referenceImageId: String?,
     val rex: Int,
     val sheddingLevel: Int,
     val shortLegs: Int,
@@ -37,18 +38,11 @@ data class Breed(
     val vcahospitalsUrl: String?,
     val vetstreetUrl: String?,
     val vocalisation: Int,
-    val weight: Weight,
     val wikipediaUrl: String?
 ){
     data class Image(
-        val height: Int? = null,
-        val id: String? = null,
-        val url: String? = null,
-        val width: Int? = null
-    )
-
-    data class Weight(
-        val imperial: String,
-        val metric: String
+        val id: String,
+        val url: String,
+        val type: TypeImages
     )
 }

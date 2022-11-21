@@ -7,7 +7,9 @@ import com.google.gson.GsonBuilder
 import com.samuelnunes.data.Constants
 import com.samuelnunes.data.Constants.CATS_API_BASE_URL
 import com.samuelnunes.data.local.AppDatabase
+import com.samuelnunes.data.local.dao.BreedDao
 import com.samuelnunes.data.local.dao.CatsDao
+import com.samuelnunes.data.local.dao.ImageDao
 import com.samuelnunes.data.remote.api.TheCatApi
 import com.samuelnunes.data.repository.CatsRepository
 import com.samuelnunes.domain.repository.ICatsRepository
@@ -58,13 +60,27 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideCharacterDao(db: AppDatabase): CatsDao = db.catsDao()
+    fun provideCatsDao(db: AppDatabase): CatsDao = db.catsDao()
 
     @Singleton
     @Provides
-    fun provideNetworkConnection(@ApplicationContext appContext: Context): NetworkConnectivityObserver = NetworkConnectivityObserver(appContext)
+    fun provideBreedDao(db: AppDatabase): BreedDao = db.breedDao()
 
     @Singleton
     @Provides
-    fun providerTheCatsRepository(theCatApi: TheCatApi, dao: CatsDao): ICatsRepository = CatsRepository(theCatApi, dao)
+    fun provideImageDao(db: AppDatabase): ImageDao = db.imageDao()
+
+    @Singleton
+    @Provides
+    fun provideNetworkConnection(@ApplicationContext appContext: Context): NetworkConnectivityObserver =
+        NetworkConnectivityObserver(appContext)
+
+    @Singleton
+    @Provides
+    fun providerTheCatsRepository(
+        theCatApi: TheCatApi,
+        catsDao: CatsDao,
+        breedDao: BreedDao,
+        imageDao: ImageDao
+    ): ICatsRepository = CatsRepository(theCatApi, catsDao, breedDao, imageDao)
 }

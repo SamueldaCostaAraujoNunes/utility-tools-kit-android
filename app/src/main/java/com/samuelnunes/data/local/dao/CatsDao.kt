@@ -2,23 +2,27 @@ package com.samuelnunes.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.samuelnunes.data.dto.response.BreedDTO
+import androidx.room.Transaction
+import com.samuelnunes.data.local.entitys.BreedImageCrossRefEntity
+import com.samuelnunes.data.local.entitys.BreedWithImage
 import com.samuelnunes.utility_tool_kit.database.dao.BaseDao
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CatsDao : BaseDao<BreedDTO> {
+interface CatsDao: BaseDao<BreedImageCrossRefEntity> {
 
-
-    @Query("SELECT * FROM BreedDTO WHERE id=:id")
-    fun getBreed(id: String): Flow<BreedDTO>
+    @Transaction
+    @Query("SELECT * FROM BreedEntity WHERE breedentity.breedId=:breedId LIMIT 1")
+    fun getBreed(breedId: String): Flow<BreedWithImage>
 
     fun getAll(isAsc: Boolean) = if (isAsc) getAllAsc() else getAllDesc()
 
-    @Query("SELECT * FROM BreedDTO ORDER BY name ASC")
-    fun getAllAsc(): Flow<List<BreedDTO>>
+    @Transaction
+    @Query("SELECT * FROM BreedEntity ORDER BY breedentity.name ASC")
+    fun getAllAsc(): Flow<List<BreedWithImage>>
 
-    @Query("SELECT * FROM BreedDTO ORDER BY name DESC")
-    fun getAllDesc(): Flow<List<BreedDTO>>
+    @Transaction
+    @Query("SELECT * FROM BreedEntity ORDER BY breedentity.name DESC")
+    fun getAllDesc(): Flow<List<BreedWithImage>>
 
 }

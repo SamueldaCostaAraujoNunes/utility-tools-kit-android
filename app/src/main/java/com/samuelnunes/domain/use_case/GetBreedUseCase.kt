@@ -12,7 +12,9 @@ class GetBreedUseCase @Inject constructor(
 ) {
     operator fun invoke(id: String): Flow<Resource<Breed>> {
         return repository.getBreed(id).map { result ->
-            result.map(mapperSuccess = { it?.toBreed() })
+            result.map(mapperSuccess = { map ->
+                map.breedEntity.toBreed(map.imageEntity.firstOrNull()?.toImage())
+            })
         }
     }
 

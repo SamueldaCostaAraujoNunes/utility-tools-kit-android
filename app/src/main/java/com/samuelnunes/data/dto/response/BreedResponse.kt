@@ -1,15 +1,11 @@
 package com.samuelnunes.data.dto.response
 
 
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import com.samuelnunes.domain.entity.Breed
+import com.samuelnunes.data.local.entitys.BreedEntity
+import com.samuelnunes.data.local.entitys.BreedWithImage
 
-@Entity
-data class BreedDTO(
+data class BreedResponse(
     val adaptability: Int,
     @SerializedName("affection_level")
     val affectionLevel: Int,
@@ -34,10 +30,8 @@ data class BreedDTO(
     @SerializedName("health_issues")
     val healthIssues: Int,
     val hypoallergenic: Int,
-    @PrimaryKey
     val id: String,
-    @Embedded
-    val image: ImageDTO?,
+    val image: ImageResponse?,
     val indoor: Int,
     val intelligence: Int,
     val lap: Int,
@@ -66,66 +60,54 @@ data class BreedDTO(
     @SerializedName("vetstreet_url")
     val vetstreetUrl: String?,
     val vocalisation: Int,
-    @Embedded
-    val weight: WeightDTO,
+    val weight: WeightResponse,
     @SerializedName("wikipedia_url")
     val wikipediaUrl: String?
 ) {
-    fun toBreed(): Breed = Breed(
-        adaptability,
-        affectionLevel,
-        altNames,
-        cfaUrl,
-        childFriendly,
-        countryCode,
-        countryCodes,
-        description,
-        dogFriendly,
-        energyLevel,
-        experimental,
-        grooming,
-        hairless,
-        healthIssues,
-        hypoallergenic,
-        id,
-        image?.toImage() ?: Breed.Image(),
-        indoor,
-        intelligence,
-        lap,
-        lifeSpan,
-        name,
-        natural,
-        origin,
-        rare,
-        referenceImageId,
-        rex,
-        sheddingLevel,
-        shortLegs,
-        socialNeeds,
-        strangerFriendly,
-        suppressedTail,
-        temperament,
-        vcahospitalsUrl,
-        vetstreetUrl,
-        vocalisation,
-        weight.toWeight(),
-        wikipediaUrl
-    )
-
-    data class ImageDTO(
-        val height: Int?,
-        @ColumnInfo(name = "id_image")
-        val id: String?,
-        val url: String?,
-        val width: Int?
-    ) {
-        fun toImage() = Breed.Image(height, id, url, width)
+    fun toBreedWithImage(): BreedWithImage {
+        val breed = BreedEntity(
+            adaptability,
+            affectionLevel,
+            altNames,
+            cfaUrl,
+            childFriendly,
+            countryCode,
+            countryCodes,
+            description,
+            dogFriendly,
+            energyLevel,
+            experimental,
+            grooming,
+            hairless,
+            healthIssues,
+            hypoallergenic,
+            id,
+            indoor,
+            intelligence,
+            lap,
+            lifeSpan,
+            name,
+            natural,
+            origin,
+            rare,
+            rex,
+            sheddingLevel,
+            shortLegs,
+            socialNeeds,
+            strangerFriendly,
+            suppressedTail,
+            temperament,
+            vcahospitalsUrl,
+            vetstreetUrl,
+            vocalisation,
+            wikipediaUrl
+        )
+        val images = listOfNotNull(image?.toEntity())
+        return BreedWithImage(breed, images)
     }
 
-    data class WeightDTO(
+    data class WeightResponse(
         val imperial: String,
         val metric: String
-    ) {
-        fun toWeight() = Breed.Weight(imperial, metric)
-    }
+    )
 }

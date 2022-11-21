@@ -2,7 +2,6 @@ package com.samuelnunes.utility_tool_kit.network
 
 import com.samuelnunes.utility_tool_kit.domain.Resource
 import kotlinx.coroutines.flow.*
-import retrofit2.Response
 
 
 abstract class BaseRepository {
@@ -41,5 +40,3 @@ abstract class BaseRepository {
     }
 
 }
-
-
