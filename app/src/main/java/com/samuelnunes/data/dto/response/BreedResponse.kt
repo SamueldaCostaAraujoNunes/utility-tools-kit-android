@@ -102,7 +102,7 @@ data class BreedResponse(
             vocalisation,
             wikipediaUrl
         )
-        val images = listOfNotNull(image?.toEntity())
+        val images = listOfNotNull(image?.toEntity(id))
         return BreedWithImage(breed, images)
     }
 

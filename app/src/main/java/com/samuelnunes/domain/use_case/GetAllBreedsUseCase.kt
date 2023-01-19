@@ -1,5 +1,6 @@
 package com.samuelnunes.domain.use_case
 
+import com.samuelnunes.data.local.entitys.ImageEntity
 import com.samuelnunes.domain.entity.Breed
 import com.samuelnunes.domain.repository.ICatsRepository
 import com.samuelnunes.utility_tool_kit.domain.Resource
@@ -14,7 +15,8 @@ class GetAllBreedsUseCase @Inject constructor(
         return repository.getAllBreeds(isAsc).map { res ->
             res.map(mapperSuccess = { list ->
                 list.map {
-                    it.breedEntity.toBreed(it.imageEntity.firstOrNull()?.toImage())
+                    val imageList = it.imageEntity.map(ImageEntity::toImage).take(10)
+                    it.breedEntity.toBreed(imageList)
                 }
             })
         }

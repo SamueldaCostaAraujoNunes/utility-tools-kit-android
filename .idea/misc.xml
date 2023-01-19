@@ -10,9 +10,10 @@
         <entry key="..\:/Users/samue/Utils/app/src/main/res/font/poppins.xml" value="0.4171875" />
         <entry key="..\:/Users/samue/Utils/app/src/main/res/layout/activity_main.xml" value="0.5" />
         <entry key="..\:/Users/samue/Utils/app/src/main/res/layout/content_main.xml" value="0.38697916666666665" />
-        <entry key="..\:/Users/samue/Utils/app/src/main/res/layout/fragment_cat_detail.xml" value="0.38697916666666665" />
-        <entry key="..\:/Users/samue/Utils/app/src/main/res/layout/fragment_first.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/samue/Utils/app/src/main/res/layout/fragment_cat_detail.xml" value="0.33" />
+        <entry key="..\:/Users/samue/Utils/app/src/main/res/layout/fragment_first.xml" value="0.4548952543822146" />
         <entry key="..\:/Users/samue/Utils/app/src/main/res/layout/fragment_second.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/samue/Utils/app/src/main/res/layout/image_item.xml" value="0.45404018811457886" />
         <entry key="..\:/Users/samue/Utils/app/src/main/res/layout/item_cat.xml" value="0.25729166666666664" />
         <entry key="..\:/Users/samue/Utils/app/src/main/res/layout/item_gif.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/samue/Utils/app/src/main/res/menu/menu_main.xml" value="0.25729166666666664" />

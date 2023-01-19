@@ -1,8 +1,9 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">MyCats</string>
     <string name="wikipedia">Wikipedia</string>
     <string name="error_in_fetch_cats">Hmmmm, deu algum erro na listagem de %1$s</string>
     <string name="error_in_fetch_cat">Hmmmm, deu algum erro na busca do gato, f</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="destination_label" tools:ignore="ExtraTranslation">You are on {destination}</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.samuelnunes.domain.use_case
 
+import com.samuelnunes.data.local.entitys.ImageEntity
 import com.samuelnunes.domain.entity.Breed
 import com.samuelnunes.domain.repository.ICatsRepository
 import com.samuelnunes.utility_tool_kit.domain.Resource
@@ -13,7 +14,8 @@ class GetBreedUseCase @Inject constructor(
     operator fun invoke(id: String): Flow<Resource<Breed>> {
         return repository.getBreed(id).map { result ->
             result.map(mapperSuccess = { map ->
-                map.breedEntity.toBreed(map.imageEntity.firstOrNull()?.toImage())
+                val imageList = map.imageEntity.map(ImageEntity::toImage).take(10)
+                map.breedEntity.toBreed(imageList)
             })
         }
     }

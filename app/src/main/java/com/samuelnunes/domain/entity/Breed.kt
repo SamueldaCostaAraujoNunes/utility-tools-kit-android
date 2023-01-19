@@ -19,7 +19,7 @@ data class Breed(
     val healthIssues: Int,
     val hypoallergenic: Int,
     val id: String,
-    val image: Image?,
+    val images: List<Image>,
     val indoor: Int,
     val intelligence: Int,
     val lap: Int,

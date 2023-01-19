@@ -9,8 +9,7 @@ data class BreedWithImage(
     @Embedded val breedEntity: BreedEntity,
     @Relation(
         parentColumn = "breedId",
-        entityColumn = "imageId",
-        associateBy = Junction(BreedImageCrossRefEntity::class)
+        entityColumn = "breedId"
     )
     val imageEntity: List<ImageEntity>
 )

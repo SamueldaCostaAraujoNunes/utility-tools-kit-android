@@ -3,6 +3,7 @@ package com.samuelnunes.presentation.screens.cats_detail
 import androidx.lifecycle.*
 import com.samuelnunes.data.dto.response.error.NotFoundError
 import com.samuelnunes.domain.entity.Breed
+import com.samuelnunes.domain.repository.ICatsRepository
 import com.samuelnunes.domain.use_case.GetBreedUseCase
 import com.samuelnunes.utility_tool_kit.domain.Resource
 import com.samuelnunes.utility_tool_kit.network.NetworkConnectivityObserver
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CatDetailViewModel @Inject constructor(
     private val getBreedUseCase: GetBreedUseCase,
+    private var repository: ICatsRepository,
     private var networkConnectivityObserver: NetworkConnectivityObserver
 ) : ViewModel() {
 
@@ -50,6 +52,7 @@ class CatDetailViewModel @Inject constructor(
                     else -> {}
                 }
             }
+            repository.fetchImagesBreed(id)
         }
     }
 

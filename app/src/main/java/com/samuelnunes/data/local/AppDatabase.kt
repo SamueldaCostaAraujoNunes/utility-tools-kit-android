@@ -6,10 +6,9 @@ import com.samuelnunes.data.local.dao.BreedDao
 import com.samuelnunes.data.local.dao.CatsDao
 import com.samuelnunes.data.local.dao.ImageDao
 import com.samuelnunes.data.local.entitys.BreedEntity
-import com.samuelnunes.data.local.entitys.BreedImageCrossRefEntity
 import com.samuelnunes.data.local.entitys.ImageEntity
 
-@Database(entities = [BreedEntity::class, ImageEntity::class, BreedImageCrossRefEntity::class], version = 8, exportSchema = true)
+@Database(entities = [BreedEntity::class, ImageEntity::class], version = 9, exportSchema = true)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun catsDao(): CatsDao
     abstract fun breedDao(): BreedDao

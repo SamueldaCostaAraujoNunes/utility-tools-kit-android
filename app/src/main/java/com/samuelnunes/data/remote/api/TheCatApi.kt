@@ -30,16 +30,15 @@ interface TheCatApi {
 
     @GET("images/search")
     @ErrorType(NotFoundError::class, NOT_FOUND)
-    suspend fun getRandomImage(
+    suspend fun getImage(
         @Query("size") size: SizeImages? = null,
         @Query("mime_types") mimeTypes: TypeImages? = null,
         @Query("order") order: OrderImages? = null,
         @Query("limit") limit: Int? = null,
         @Query("page") page: Int? = null,
         @Query("has_breeds") hasBoolean: Boolean? = null,
-        @Query("breed_ids") breedIds: Int? = null,
+        @Query("breed_id") breedId: String? = null,
         @Query("category_ids") category: Int? = null,
         @Query("sub_id") subId: Int? = null
     ): Resource<List<ImageResponse>>
-
 }

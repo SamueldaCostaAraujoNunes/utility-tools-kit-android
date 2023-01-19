@@ -11,7 +11,8 @@ data class ImageEntity(
     @PrimaryKey
     val imageId: String,
     val url: String,
-    val type: TypeImages
+    val type: TypeImages,
+    val breedId: String?
 ) {
     fun toImage(): Breed.Image = Breed.Image(
         imageId, url, type

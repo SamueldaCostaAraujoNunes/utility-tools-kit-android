@@ -12,14 +12,14 @@ data class ImageResponse(
     val url: String,
     val width: Int
 ) {
-    fun toEntity(): ImageEntity {
+    fun toEntity(breedId: String? = null): ImageEntity {
         val imageType = try {
             TypeImages.valueOf(url.substringAfterLast(".").uppercase(Locale.getDefault()))
         } catch (ex: IllegalArgumentException) {
             TypeImages.JPG
         }
         return ImageEntity(
-            id, url, imageType
+            id, url, imageType, breedId
         )
     }
 }

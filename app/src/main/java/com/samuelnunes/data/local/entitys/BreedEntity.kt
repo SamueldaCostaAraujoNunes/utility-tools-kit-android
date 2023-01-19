@@ -43,7 +43,7 @@ data class BreedEntity(
     val vocalisation: Int,
     val wikipediaUrl: String?
 ) {
-    fun toBreed(image: Breed.Image?): Breed = Breed(
+    fun toBreed(image: List<Breed.Image>): Breed = Breed(
         adaptability,
         affectionLevel,
         altNames,
