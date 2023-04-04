@@ -83,5 +83,8 @@ enum class HttpStatusCode(val statusCode: Int): Serializable {
 
     companion object {
         fun enumByStatusCode(statusCode: Int) = values().find { it.statusCode == statusCode } ?: UNKNOWN
+
+        fun inStatus(code: Int, vararg codes: HttpStatusCode): Boolean = codes.any { it.statusCode == code }
+
     }
 }
