@@ -1,6 +1,7 @@
 package com.samuelnunes
 
 import android.app.Application
+import android.content.Context
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.ImageDecoderDecoder
@@ -19,19 +20,33 @@ class ToolKitUtilsApplication : Application(), ImageLoaderFactory {
         }
     }
 
-    override fun newImageLoader(): ImageLoader = ImageLoader.Builder(this)
-        .memoryCache {
-            MemoryCache.Builder(this)
-                .maxSizePercent(0.25)
-                .build()
+    override fun newImageLoader(): ImageLoader = buildImageLoader(this) {
+        buildMemoryCache(this@ToolKitUtilsApplication) {
+            maxSizePercent(0.25)
         }
-        .diskCache {
-            DiskCache.Builder()
-                .directory(cacheDir.resolve("image_cache"))
-                .maxSizePercent(0.02)
-                .build()
+        buildDiskCache {
+            directory(cacheDir.resolve("image_cache"))
+            maxSizePercent(0.02)
         }
-        .components {
+        components {
             add(ImageDecoderDecoder.Factory())
-        }.build()
+        }
+    }
+
+    private inline fun buildImageLoader(
+        context: Context,
+        builderAction: ImageLoader.Builder.() -> Unit = {}
+    ): ImageLoader =
+        ImageLoader.Builder(context).apply(builderAction).build()
+
+    private inline fun ImageLoader.Builder.buildMemoryCache(
+        context: Context,
+        builderAction: MemoryCache.Builder.() -> Unit = {}
+    ) = memoryCache(MemoryCache.Builder(context).apply(builderAction).build())
+
+    private inline fun ImageLoader.Builder.buildDiskCache(
+        builderAction: DiskCache.Builder.() -> Unit = {}
+    ) = diskCache(DiskCache.Builder().apply(builderAction).build())
+
+
 }
