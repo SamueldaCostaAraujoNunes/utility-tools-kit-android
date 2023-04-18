@@ -1,7 +1,6 @@
 package com.samuelnunes.di
 
 import android.content.Context
-import androidx.room.Room
 import com.samuelnunes.data.Constants
 import com.samuelnunes.data.Constants.CATS_API_BASE_URL
 import com.samuelnunes.data.local.AppDatabase
@@ -11,6 +10,7 @@ import com.samuelnunes.data.local.dao.ImageDao
 import com.samuelnunes.data.remote.api.TheCatApi
 import com.samuelnunes.data.repository.CatsRepository
 import com.samuelnunes.domain.repository.ICatsRepository
+import com.samuelnunes.utility_tool_kit.database.dao.buildRoomDatabase
 import com.samuelnunes.utility_tool_kit.network.EnumConverter.EnumConverterFactory
 import com.samuelnunes.utility_tool_kit.network.FlowAdapter.FlowCallAdapterFactory
 import com.samuelnunes.utility_tool_kit.network.LiveDataAdapter.LiveDataCallAdapterFactory
@@ -56,11 +56,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun database(@ApplicationContext context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, Constants.TABLE_NAME_CATS)
-            .fallbackToDestructiveMigration()
-            .build()
-    }
+    fun database(@ApplicationContext context: Context): AppDatabase =
+        buildRoomDatabase(context, AppDatabase::class.java, Constants.TABLE_NAME_CATS) {
+            fallbackToDestructiveMigration()
+        }
 
     @Singleton
     @Provides
