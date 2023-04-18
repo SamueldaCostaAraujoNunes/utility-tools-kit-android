@@ -42,7 +42,7 @@ sealed class Resource<out T> : Serializable {
     data class Error<out T>(
         val exception: Exception,
         val statusCode: HttpStatusCode? = null,
-        val errorData: Serializable? = null
+        val errorData: Any? = null
     ) : Resource<T>() {
 
         constructor(
@@ -56,14 +56,14 @@ sealed class Resource<out T> : Serializable {
         constructor(
             message: String? = null,
             statusCode: HttpStatusCode? = null,
-            errorData: Serializable? = null
+            errorData: Any? = null
         ) : this(
             exception = Exception(message),
             statusCode = statusCode,
             errorData = errorData
         )
 
-        fun <D> map(mapperError: (Serializable?) -> Serializable? = { it }) = Error<D>(
+        fun <D> map(mapperError: (Any?) -> Any? = { it }) = Error<D>(
             exception,
             statusCode,
             mapperError(errorData)
@@ -80,7 +80,7 @@ sealed class Resource<out T> : Serializable {
     }
 
     fun <D> map(
-        mapperError: (Serializable?) -> Serializable? = { it },
+        mapperError: (Any?) -> Any? = { it },
         mapperSuccess: ((T) -> D)
     ): Resource<D> {
         return when (this) {

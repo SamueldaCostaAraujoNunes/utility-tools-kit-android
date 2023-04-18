@@ -15,7 +15,7 @@ annotation class ErrorType(
 )
 
 fun parseError(
-    statusCode: Int,
+    statusCode: HttpStatusCode,
     responseBody: ResponseBody?,
     annotations: Array<out Annotation>
 ): Any? {

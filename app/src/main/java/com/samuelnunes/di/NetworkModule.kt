@@ -2,8 +2,6 @@ package com.samuelnunes.di
 
 import android.content.Context
 import androidx.room.Room
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.samuelnunes.data.Constants
 import com.samuelnunes.data.Constants.CATS_API_BASE_URL
 import com.samuelnunes.data.local.AppDatabase
@@ -17,6 +15,8 @@ import com.samuelnunes.utility_tool_kit.network.EnumConverter.EnumConverterFacto
 import com.samuelnunes.utility_tool_kit.network.FlowAdapter.FlowCallAdapterFactory
 import com.samuelnunes.utility_tool_kit.network.LiveDataAdapter.LiveDataCallAdapterFactory
 import com.samuelnunes.utility_tool_kit.network.NetworkConnectivityObserver
+import com.samuelnunes.utility_tool_kit.network.buildRetrofit
+import com.samuelnunes.utility_tool_kit.network.client
 import com.samuelnunes.utility_tool_kit.network.naturalAdapter.ResourceCallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -26,6 +26,7 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -34,21 +35,24 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun providerGson(): Gson = GsonBuilder().create()
+    fun providerRetrofitBuilder(): Retrofit = buildRetrofit {
+        addCallAdapterFactory(ResourceCallAdapterFactory.create())
+        addCallAdapterFactory(LiveDataCallAdapterFactory.create())
+        addCallAdapterFactory(FlowCallAdapterFactory.create())
+        addConverterFactory(EnumConverterFactory.create())
+        addConverterFactory(GsonConverterFactory.create())
+        baseUrl(CATS_API_BASE_URL)
+
+        client {
+            readTimeout(30L, TimeUnit.SECONDS)
+            connectTimeout(30L, TimeUnit.SECONDS)
+        }
+
+    }
 
     @Singleton
     @Provides
-    fun providerRetrofitBuilder(gson: Gson): Retrofit.Builder = Retrofit.Builder()
-        .addCallAdapterFactory(ResourceCallAdapterFactory.create())
-        .addCallAdapterFactory(LiveDataCallAdapterFactory.create())
-        .addCallAdapterFactory(FlowCallAdapterFactory.create())
-        .addConverterFactory(EnumConverterFactory.create())
-        .addConverterFactory(GsonConverterFactory.create(gson))
-
-    @Singleton
-    @Provides
-    fun providerTheCatApiService(builder: Retrofit.Builder): TheCatApi =
-        builder.baseUrl(CATS_API_BASE_URL).build().create()
+    fun providerTheCatApiService(retrofit: Retrofit): TheCatApi = retrofit.create()
 
     @Provides
     @Singleton
